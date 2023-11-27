@@ -1,0 +1,9 @@
+RewriteEngine On
+RewriteBase /ejercicios/CalendarioEscolar/public
+
+# Ignora los directorios y archivos reales
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Redirecciona las solicitudes a index.php
+RewriteRule ^([^/]+)/([^/]+)/?$ index.php?con=$1&met=$2 [L,QSA]
