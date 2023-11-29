@@ -2,6 +2,12 @@
 
     require_once '../vendor/autoload.php';
 
+    $loader = new \Twig\Loader\FilesystemLoader('../templates');
+    $twig = new \Twig\Environment($loader, [
+        //'cache' => '../var/cache',
+    ]);
+
+
     // recopilo información sobre qué método de qué controlador
     // voy a tener que ejecutar.
     $metodo      = $_GET["met"]??"listarEventos" ;
@@ -24,3 +30,4 @@
     if (method_exists($instanciaControlador, $metodo)) $instanciaControlador->$metodo() ;
     else 
         die("Se ha producido un error en el controlador.") ;
+

@@ -22,7 +22,12 @@
                 // - Contraseña
                 // - Nombre de la base de datos (opcional)
                 // - Puerto (opcional)
-                $this->db = new mysqli("db", "root", "", "calendario") ;
+                if(file_exists('../.env')) {
+                    $env = parse_ini_file('../.env');
+                    $this->db = new mysqli($env['DB_CONNECTION'], $env['DB_USERNAME'], $env['DB_PASSWORD'], $env['DB_DATABASE']);
+                } else {
+                    echo "No se encontró el archivo .env";
+                }
         
                 // Podemos comprobar si se ha producido un error
                 //if ($sqli->connect_errno)
