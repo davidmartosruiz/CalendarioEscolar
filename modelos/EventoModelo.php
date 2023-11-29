@@ -11,6 +11,7 @@ class Evento {
     public string $anotaciones;
     public string $nombre_asignatura;
     public string $abreviatura_asignatura;
+    public ?string $nombre_usuario;
 
     /**
      * Recupera todos los eventos de la base de datos y los
@@ -20,7 +21,7 @@ class Evento {
     public static function getAllEventos(): array {
         $conn = Conexion::getConnection();
         // Asumiendo que la columna de fecha en la tabla 'eventos' se llama 'fecha'
-        $conn->query("SELECT eventos.*, asignaturas.nombre AS nombre_asignatura, asignaturas.abreviatura AS abreviatura_asignatura FROM eventos LEFT JOIN asignaturas ON eventos.asignatura_id = asignaturas.id ORDER BY eventos.fecha ASC;");
+        $conn->query("SELECT eventos.*, asignaturas.nombre AS nombre_asignatura, asignaturas.abreviatura AS abreviatura_asignatura, usuarios.nombre AS nombre_usuario FROM eventos LEFT JOIN asignaturas ON eventos.asignatura_id = asignaturas.id LEFT JOIN usuarios ON eventos.usuario_id = usuarios.id ORDER BY eventos.fecha ASC;");
         return $conn->getAll("Evento");
     }
 

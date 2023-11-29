@@ -5,7 +5,8 @@
     <title>Calendario</title>
     <link rel="icon" type="image/png" href="../favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../public/dist/output.css" rel="stylesheet">
+    <link href="../../public/dist/output.css" rel="stylesheet">
+    <link href="../../public/css/fontawesome-free-6.5.0-web/css/all.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
     <div class="text-center py-4 bg-gray-800 text-white">
@@ -17,72 +18,27 @@
             <a href="/" class="hover:text-gray-300">Vista listado</a>
         </div>
     </div>
-    <div class="container mx-auto mt-6">
-        <h2 class="text-center text-2xl font-semibold mb-4">
-            {{ nombreMes(calendar.format('F')) }} {{ calendar.format('Y') }}
-        </h2>
-        <div class="flex justify-center space-x-2 mb-4">
-            <a href="?fecha={{ prevMonth }}" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">&lt; Mes anterior</a>
-            <a href="/vistaMensual.php" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">Mes actual</a>
-            <a href="?fecha={{ nextMonth }}" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">Mes siguiente &gt;</a>
-        </div>
-        <table class="table-auto w-full text-center border-collapse">
-            <tr>
-                <th class="px-4 py-2 border bg-gray-200">Lunes</th>
-                <th class="px-4 py-2 border bg-gray-200">Martes</th>
-                <th class="px-4 py-2 border bg-gray-200">Miércoles</th>
-                <th class="px-4 py-2 border bg-gray-200">Jueves</th>
-                <th class="px-4 py-2 border bg-gray-200">Viernes</th>
-                <th class="px-4 py-2 border bg-gray-200">Sábado</th>
-                <th class="px-4 py-2 border bg-gray-200">Domingo</th>
-            </tr>
-            {% for fecha in dias %}
-    {% set day = fecha|date('Y-m-d') %}
-    {% if loop.index0 % 7 == 0 %}
-        {% if not loop.first %}
-            </tr>
-        {% endif %}
-        <tr>
-    {% endif %}
-
-    <td class="{{ day.format('m') != calendar.format('m') ? 'bg-gray-300' : '' }} border px-4 py-2">
-        {{ day|date('j') }}
-        {% if eventosPorFecha[day] %}
-            <div class="mt-2">
-                {% for evento in eventosPorFecha[day] %}
-                    <div>
-                        <span class="text-sm font-bold">{{ evento.nombre_asignatura|e }}</span><br>
-                        <span class="text-xs">{{ evento.nombre|e }}</span><br>
-                        <span class="text-xs">{{ evento.anotaciones|e }}</span>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    </td>
-
-    {% if loop.last %}
-        </tr>
-    {% endif %}
-{% endfor %}
-
-        </table>
-    </div>
-
     <div class="container mx-auto mt-6 flex">
     <!-- Columna de Visualizador de Eventos -->
-    <div id="eventViewer" class="w-1/3 p-4 bg-gray-100 border-r">
-        <!-- Detalles del evento se cargarán aquí -->e
-    </div>
-
-    <!-- Columna de Calendario -->
-    <div class="w-2/3">
+    <div class="w-2/6 p-4 bg-gray-100 border-r">
+    <div class="flex items-center justify-between">
+        <a href="?fecha={{ prevMonth }}" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">&lt;</a>
+        
         <h2 class="text-center text-2xl font-semibold mb-4">
             {{ nombreMes(calendar.format('F')) }} {{ calendar.format('Y') }}
         </h2>
-        <div class="flex justify-center space-x-2 mb-4">
-            <!-- Botones de navegación -->
-            <!-- ... -->
-        </div>
+        
+        <a href="?fecha={{ nextMonth }}" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">&gt;</a>
+    </div>
+
+    <div id="eventViewer" class="mt-4">
+        <h4 class="text-lg">Selecciona un evento para mostrarlo</h4>
+    </div>
+</div>
+
+
+    <!-- Columna de Calendario -->
+    <div class="w-5/6">
         <table class="table-auto w-full text-center border-collapse">
             <tr>
                 <th class="px-4 py-2 border bg-gray-200">Lunes</th>
@@ -111,8 +67,10 @@
                                     data-abreviatura="{{ evento.abreviatura_asignatura|e }}"
                                     data-descripcion="{{ evento.descripcion|e }}"
                                     data-nombre_asignatura="{{ evento.nombre_asignatura|e }}"
+                                    data-fecha="{{ evento.fecha|date('d M Y') }}"
                                     data-anotaciones="{{ evento.anotaciones|e }}"
-                                    class="text-sm font-bold bg-blue-500 text-white rounded py-1 px-2 mb-1">
+                                    data-usuario="{{ evento.nombre_usuario|e }}"
+                                    class="text-xs font-bold bg-blue-500 text-white rounded py-1 px-2 mb-1">
                                     {{ evento.abreviatura_asignatura|e }}
                                 </button>
                             {% endfor %}
@@ -131,23 +89,22 @@
     function mostrarEvento(button) {
     const nombre = button.getAttribute('data-nombre');
     const abreviatura = button.getAttribute('data-abreviatura');
-    const descripcion = button.getAttribute('data-descripcion');
+    const fecha = button.getAttribute('data-fecha');
     const nombre_asignatura = button.getAttribute('data-nombre_asignatura');
     const anotaciones = button.getAttribute('data-anotaciones');
+    const usuario = button.getAttribute('data-usuario');
 
     const eventViewer = document.getElementById('eventViewer');
     eventViewer.innerHTML = `
-        <h3>${nombre_asignatura}</h3>
-        <p>${nombre}</p>
-        <p>${descripcion}</p>
-        <p>${anotaciones}</p>
-        <!-- Más detalles del evento -->
+        <h4 class="text-xl">Evento seleccionado</h4>
+        <p><i class="fa-solid fa-calendar-days"></i> ${fecha}</p>
+        <p><i class="fa-solid fa-graduation-cap"></i> ${nombre_asignatura}</p>
+        <p><i class="fa-solid fa-circle-info"></i> ${nombre}</p>
+        <p><i class="fa-solid fa-file"></i> ${anotaciones}</p>
+        ${usuario ? `<p><i class="fa-solid fa-user"></i> ${usuario}</p>` : ''}
     `;
 }
-
-
-
 </script>
-
+<br>
 </body>
 </html>
