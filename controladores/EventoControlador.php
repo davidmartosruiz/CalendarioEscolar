@@ -1,5 +1,6 @@
 <?php
 require_once "../modelos/EventoModelo.php";
+require_once "../vendor/autoload.php";
 
 class EventoControlador {
     private $evento;
@@ -19,6 +20,7 @@ class EventoControlador {
     public function eliminarEvento($id) {
         return Evento::eliminarEvento($id);
     }
+
 
     public function listarEventos() {
         global $twig;
@@ -91,7 +93,6 @@ class EventoControlador {
     }
     // Verifica si el usuario ya ha iniciado sesión
     $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
-
 
     // Renderiza la plantilla con Twig
     echo $twig->render('listadoEventos.php.twig', [

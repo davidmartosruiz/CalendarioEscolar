@@ -15,7 +15,7 @@
             {% if loggedin %}
                 <a href="../Usuario/logout" class="hover:text-gray-300">Cerrar sesión</a>
             {% else %}
-                <a href="../Usuario/showLogin" class="hover:text-gray-300">Iniciar sesión como administrador</a>
+                <a href="../Usuario/showLogin" class="hover:text-gray-300">Acceso administrador</a>
             {% endif %}
             <a href="exportarCalendario.php" class="hover:text-gray-300">Exportar calendario</a>
             <a href="/vistaMensual.php" class="hover:text-gray-300">Vista mensual</a>
@@ -29,7 +29,7 @@
         <a href="?fecha={{ prevMonth }}" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">&lt;</a>
         
         <h2 class="text-center text-2xl font-semibold">
-            {{ nombreMes(calendar.format('F')) }} {{ calendar.format('Y') }}
+            {{ nombreMes(calendar.format('Y-m-25')) }} {{ calendar.format('Y') }}
         </h2>
         
         <a href="?fecha={{ nextMonth }}" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">&gt;</a>
@@ -71,7 +71,9 @@
                                     data-abreviatura="{{ evento.abreviatura_asignatura|e }}"
                                     data-descripcion="{{ evento.descripcion|e }}"
                                     data-nombre_asignatura="{{ evento.nombre_asignatura|e }}"
-                                    data-fecha="{{ evento.fecha|date('d M Y') }}"
+                                    {% set dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'] %}
+                                    {% set meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'] %}
+                                    data-fecha="{{ dias[evento.fecha|date('w')] }}, {{ evento.fecha|date('j') }} de {{ meses[evento.fecha|date('n') - 1] }} de {{ evento.fecha|date('Y') }}"
                                     data-anotaciones="{{ evento.anotaciones|e }}"
                                     data-usuario="{{ evento.nombre_usuario|e }}"
                                     class="text-xs font-bold bg-gray-700 text-white rounded py-1 px-1 mb-1">
