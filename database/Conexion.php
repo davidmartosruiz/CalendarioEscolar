@@ -1,88 +1,30 @@
 <?php
 
-    class Conexion {
+class Conexion {
+    private static ?Conexion $instancia = null;
+    private $pdo;
 
-        private static ?Conexion $instancia = null ;
-        private $db ;   // conexión con el servidor de bases de datos
-
-        private $resultado ;
-
-        private function __clone() { }
-
-        /**
-         * Conectamos con el servidor de bases de datos únicamente
-         * cuando creo la instancia de la clase Conexión.
-         */
-        private function __construct() { 
-
-            try {
-               // establecer una conexión con el servidor de bases de datos indicando:
-                // - La dirección del servidor (db porque estamos trabajando con un servicio de docker)
-                // - Usuario
-                // - Contraseña
-                // - Nombre de la base de datos (opcional)
-                // - Puerto (opcional)
-                if(file_exists('../.env')) {
-                    $env = parse_ini_file('../.env');
-                    $this->db = new mysqli($env['DB_CONNECTION'], $env['DB_USERNAME'], $env['DB_PASSWORD'], $env['DB_DATABASE']);
-                } else {
-                    echo "No se encontró el archivo .env";
-                }
-        
-                // Podemos comprobar si se ha producido un error
-                //if ($sqli->connect_errno)
-                //	die("** Error de conexión con la base de datos: {$sqli->connect_error}<br/>") ;
-        
-                // seleccionar la base de datos con la que vamos a trabajar (USE en SQL)
-                // $sqli->select_db("series") ;
-            } catch(mysqli_sql_exception $exp) {		
-                die("** Error de conexión con la base de datos: ".$exp->getMessage()."<br/>") ;
+    private function __construct() {
+        try {
+            if (file_exists('../.env')) {
+                $env = parse_ini_file('../.env');
+                $dsn = "mysql:host={$env['DB_CONNECTION']};dbname={$env['DB_DATABASE']};charset=utf8";
+                $this->pdo = new PDO($dsn, $env['DB_USERNAME'], $env['DB_PASSWORD'], [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                ]);
+            } else {
+                throw new Exception("No se encontró el archivo .env");
             }
-         }
-
-        /**
-         * Crea una única instancia de la clase Conexión, la guarda y
-         * devuelve.
-         * @return Conexion
-         */
-        public static function getConnection():Conexion {
-
-            if (self::$instancia==null) self::$instancia = new Conexion ;               
-            return self::$instancia ;
+        } catch (Exception $e) {
+            die("** Error de conexión con la base de datos: " . $e->getMessage());
         }
-
-        /**
-         * Realiza una consulta sobre la base de datos y guarda
-         * el conjunto de resultados en una propiedad de la clase
-         */
-        public function query(string $sql) {
-          $this->resultado = $this->db->query($sql) ;
-          return $this ;
-        }
-
-        /**
-         * Recupera un registro del conjunto de resultados y lo
-         * devuelve en formato de Objeto.
-         * @param $clase
-         * @return object
-         */
-        public function getRow(string $clase):?object {
-            return $this->resultado->fetch_object($clase) ;
-        }
-
-        /**
-         * Recupera todos los registros en forma de objeto y
-         * los devuelve dentro de un array.
-         * @return $clase
-         * @return array 
-         */
-        public function getAll(string $clase):array {
-
-            $datos = [] ;
-            while ($item = $this->getRow($clase))
-                array_push($datos, $item) ;
-            //
-            return $datos ;
-        }
-
     }
+
+    public static function getConnection(): PDO {
+        if (self::$instancia === null) {
+            self::$instancia = new Conexion();
+        }
+        return self::$instancia->pdo;
+    }
+}

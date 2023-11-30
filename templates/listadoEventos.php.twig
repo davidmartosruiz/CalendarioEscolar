@@ -2,17 +2,21 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Calendario</title>
-    <link rel="icon" type="image/png" href="../favicon.ico" />
+    <title>Calendario escolar</title>
+    <link rel="icon" type="image/png" href="../public/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../../public/dist/output.css" rel="stylesheet">
-    <link href="../../public/css/fontawesome-free-6.5.0-web/css/all.css" rel="stylesheet">
+    <link href="../public/dist/output.css" rel="stylesheet">
+    <link href="../public/css/fontawesome-free-6.5.0-web/css/all.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
     <div class="text-center py-4 bg-gray-800 text-white">
-        <h1 class="text-xl font-bold">Calendario</h1>
+        <h1 class="text-xl font-bold">Calendario escolar</h1>
         <div class="flex justify-center space-x-4 mt-2">
-            <a href="login.php" class="hover:text-gray-300">Iniciar sesión</a>
+            {% if loggedin %}
+                <a href="../Usuario/logout" class="hover:text-gray-300">Cerrar sesión</a>
+            {% else %}
+                <a href="../Usuario/showLogin" class="hover:text-gray-300">Iniciar sesión como administrador</a>
+            {% endif %}
             <a href="exportarCalendario.php" class="hover:text-gray-300">Exportar calendario</a>
             <a href="/vistaMensual.php" class="hover:text-gray-300">Vista mensual</a>
             <a href="/" class="hover:text-gray-300">Vista listado</a>
@@ -20,11 +24,11 @@
     </div>
     <div class="container mx-auto mt-6 flex">
     <!-- Columna de Visualizador de Eventos -->
-    <div class="w-2/6 p-4 bg-gray-100 border-r">
+    <div class="w-2/6 p-4 bg-gray-200 rounded-md mr-2">
     <div class="flex items-center justify-between">
         <a href="?fecha={{ prevMonth }}" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">&lt;</a>
         
-        <h2 class="text-center text-2xl font-semibold mb-4">
+        <h2 class="text-center text-2xl font-semibold">
             {{ nombreMes(calendar.format('F')) }} {{ calendar.format('Y') }}
         </h2>
         
@@ -38,16 +42,16 @@
 
 
     <!-- Columna de Calendario -->
-    <div class="w-5/6">
+    <div class="w-5/6 rounded-lg overflow-hidden">
         <table class="table-auto w-full text-center border-collapse">
             <tr>
-                <th class="px-4 py-2 border bg-gray-200">Lunes</th>
-                <th class="px-4 py-2 border bg-gray-200">Martes</th>
-                <th class="px-4 py-2 border bg-gray-200">Miércoles</th>
-                <th class="px-4 py-2 border bg-gray-200">Jueves</th>
-                <th class="px-4 py-2 border bg-gray-200">Viernes</th>
-                <th class="px-4 py-2 border bg-gray-200">Sábado</th>
-                <th class="px-4 py-2 border bg-gray-200">Domingo</th>
+                <th class="px-4 py-2 border bg-gray-300 table-cell">Lunes</th>
+                <th class="px-4 py-2 border bg-gray-300 table-cell">Martes</th>
+                <th class="px-4 py-2 border bg-gray-300 table-cell">Miércoles</th>
+                <th class="px-4 py-2 border bg-gray-300 table-cell">Jueves</th>
+                <th class="px-4 py-2 border bg-gray-300 table-cell">Viernes</th>
+                <th class="px-4 py-2 border bg-gray-300 table-cell">Sábado</th>
+                <th class="px-4 py-2 border bg-gray-300 table-cell">Domingo</th>
             </tr>
             {% for fecha in dias %}
                 {% set day = fecha|date('Y-m-d') %}
@@ -57,7 +61,7 @@
                     {% endif %}
                     <tr>
                 {% endif %}
-                <td class="{{ day.format('m') != calendar.format('m') ? 'bg-gray-300' : '' }} border px-4 py-2" style="width: 100px; height: 100px;">
+                <td class="{{ day|date('m') != calendar|date('m') ? 'bg-gray-200' : 'bg-gray-100' }} border px-4 align-baseline py-2 table-cell w-28 h-28">
                     {{ day|date('j') }}
                     {% if eventosPorFecha[day] %}
                         <div class="mt-2">
@@ -70,7 +74,7 @@
                                     data-fecha="{{ evento.fecha|date('d M Y') }}"
                                     data-anotaciones="{{ evento.anotaciones|e }}"
                                     data-usuario="{{ evento.nombre_usuario|e }}"
-                                    class="text-xs font-bold bg-blue-500 text-white rounded py-1 px-2 mb-1">
+                                    class="text-xs font-bold bg-gray-700 text-white rounded py-1 px-1 mb-1">
                                     {{ evento.abreviatura_asignatura|e }}
                                 </button>
                             {% endfor %}
@@ -100,7 +104,7 @@
         <p><i class="fa-solid fa-calendar-days"></i> ${fecha}</p>
         <p><i class="fa-solid fa-graduation-cap"></i> ${nombre_asignatura}</p>
         <p><i class="fa-solid fa-circle-info"></i> ${nombre}</p>
-        <p><i class="fa-solid fa-file"></i> ${anotaciones}</p>
+        ${anotaciones ? `<p><i class="fa-solid fa-file"></i> ${anotaciones}</p>` : ''}
         ${usuario ? `<p><i class="fa-solid fa-user"></i> ${usuario}</p>` : ''}
     `;
 }

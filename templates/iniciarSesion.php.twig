@@ -1,0 +1,49 @@
+{% if loggedin %}
+    <script type="text/javascript">
+        window.location.href = "../Evento/listarEventos";
+    </script>
+{% endif %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <link href="../public/dist/output.css" rel="stylesheet">
+    <link href="../public/css/fontawesome-free-6.5.0-web/css/all.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+    <div class="container mx-auto my-8">
+
+        <form method="POST" action="login">
+            <input type="hidden" name="_csrf" value="{{ token }}" />
+
+            <!-- Email -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <label for="email" class="text-sm font-semibold">Email:</label>
+                <input id="email" type="email" name="email" value="juan@neatly.es" class="p-2 border rounded focus:outline-none focus:border-blue-500">
+            </div>
+
+            <!-- Contraseña -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <label for="password" class="text-sm font-semibold">Contraseña:</label>
+                <input id="password" type="password" name="password" class="p-2 border rounded focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div class="mb-8">
+                <button type="submit" class="bg-gray-800 text-white py-2 px-4 rounded w-1/4">Enviar Datos</button>
+            </div>
+        </form>
+
+        {% if error == 1 %}
+            <div class="bg-red-500 text-white py-2 px-4 rounded">
+                Ha habido un error en las credenciales. Por favor, inténtelo de nuevo.
+            </div>
+        {% endif %}
+
+
+    </div>
+</body>
+</html>

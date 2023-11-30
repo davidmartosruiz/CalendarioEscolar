@@ -19,11 +19,15 @@ class Evento {
      * @return array
      */
     public static function getAllEventos(): array {
-        $conn = Conexion::getConnection();
-        // Asumiendo que la columna de fecha en la tabla 'eventos' se llama 'fecha'
-        $conn->query("SELECT eventos.*, asignaturas.nombre AS nombre_asignatura, asignaturas.abreviatura AS abreviatura_asignatura, usuarios.nombre AS nombre_usuario FROM eventos LEFT JOIN asignaturas ON eventos.asignatura_id = asignaturas.id LEFT JOIN usuarios ON eventos.usuario_id = usuarios.id ORDER BY eventos.fecha ASC;");
-        return $conn->getAll("Evento");
+        $pdo = Conexion::getConnection();
+        // Prepara la consulta SQL
+        $sql = "SELECT eventos.*, asignaturas.nombre AS nombre_asignatura, asignaturas.abreviatura AS abreviatura_asignatura, usuarios.nombre AS nombre_usuario FROM eventos LEFT JOIN asignaturas ON eventos.asignatura_id = asignaturas.id LEFT JOIN usuarios ON eventos.usuario_id = usuarios.id ORDER BY eventos.fecha ASC";
+        $stmt = $pdo->query($sql);
+    
+        // Ejecuta la consulta y retorna los resultados
+        return $stmt->fetchAll(PDO::FETCH_CLASS, "Evento");
     }
+    
 
     
     /**

@@ -21,7 +21,7 @@ class EventoControlador {
     }
 
     public function listarEventos() {
-        global $twig; // Asegúrate de que Twig esté disponible
+        global $twig;
         $twig->addFunction(new \Twig\TwigFunction('nombreMes', function ($fecha) {
             $meses = [
                 '01' => 'Enero',
@@ -61,37 +61,46 @@ class EventoControlador {
             $eventosPorFecha[$evento->fecha][] = $evento;
         }
     
-        // Fecha actual o seleccionada
-        $fechaActual = new DateTime();
-    
-        // Obtener el primer y último día del mes, y ajustar para cubrir la semana completa
-        $primerDia = new DateTime($fechaActual->format('Y-m-01'));
-        while ($primerDia->format('N') != 1) {
-            $primerDia->modify('-1 day');
-        }
-    
-        $ultimoDia = new DateTime($fechaActual->format('Y-m-t'));
-        while ($ultimoDia->format('N') != 7) {
-            $ultimoDia->modify('+1 day');
-        }
-    
-        // Generar arreglo de fechas para el mes actual
-        $dias = [];
-        for ($dia = clone $primerDia; $dia <= $ultimoDia; $dia->modify('+1 day')) {
-            $dias[] = $dia->format('Y-m-d');
-        }
-    
-        // Fechas para navegación
-        $prevMonth = (clone $fechaActual)->modify('-1 month')->format('Y-m');
-        $nextMonth = (clone $fechaActual)->modify('+1 month')->format('Y-m');
-    
-        // Renderiza la plantilla con Twig
-        echo $twig->render('listadoEventos.php.twig', [
-            'eventosPorFecha' => $eventosPorFecha,
-            'dias' => $dias,
-            'calendar' => $fechaActual,
-            'prevMonth' => $prevMonth,
-            'nextMonth' => $nextMonth
-        ]);
+        // Utilizar la fecha de la URL si está disponible, de lo contrario, usar la fecha actual
+    $fechaURL = $_GET['fecha'] ?? date('Y-m');
+    $fechaActual = new DateTime($fechaURL);
+
+    // Ajustar para obtener el primer y último día del mes seleccionado
+    $primerDia = new DateTime($fechaActual->format('Y-m-01'));
+    while ($primerDia->format('N') != 1) {
+        $primerDia->modify('-1 day');
     }
+
+    $ultimoDia = new DateTime($fechaActual->format('Y-m-t'));
+    while ($ultimoDia->format('N') != 7) {
+        $ultimoDia->modify('+1 day');
+    }
+
+    // Generar arreglo de fechas para el mes seleccionado
+    $dias = [];
+    for ($dia = clone $primerDia; $dia <= $ultimoDia; $dia->modify('+1 day')) {
+        $dias[] = $dia->format('Y-m-d');
+    }
+
+    // Fechas para navegación
+    $prevMonth = (clone $fechaActual)->modify('-1 month')->format('Y-m');
+    $nextMonth = (clone $fechaActual)->modify('+1 month')->format('Y-m');
+
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    // Verifica si el usuario ya ha iniciado sesión
+    $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
+
+
+    // Renderiza la plantilla con Twig
+    echo $twig->render('listadoEventos.php.twig', [
+        'eventosPorFecha' => $eventosPorFecha,
+        'dias' => $dias,
+        'calendar' => $fechaActual,
+        'prevMonth' => $prevMonth,
+        'nextMonth' => $nextMonth,
+        "loggedin" => $loggedin
+    ]);
+}
 }
