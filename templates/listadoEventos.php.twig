@@ -39,12 +39,37 @@
             <h4 class="text-lg">Selecciona un evento para mostrarlo</h4>
         </div>
         {% if loggedin %}
-            <div class="mt-4 flex justify-center">
-                <a href="../Evento/agregarEvento" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 inline-block text-center mx-2">Añadir</a>
-                <a href="../Evento/modificarEvento" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 inline-block text-center mx-2">Modificar</a>
-                <a href="../Evento/eliminarEvento" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 inline-block text-center mx-2">Eliminar</a>
-            </div>
-        {% endif %}
+                <div class="mt-4 flex justify-center">
+                    <a href="../Evento/showAgregarEvento" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 inline-block text-center mx-2">Añadir</a>
+                    <a id="modificar-btn" href="../Evento/listarEventos" class="px-4 py-2 bg-gray-300 text-white rounded hover:bg-gray-600 inline-block text-center mx-2 cursor-not-allowed">Modificar</a>
+                    <a id="eliminar-btn" href="../Evento/listarEventos" class="px-4 py-2 bg-gray-300 text-white rounded hover:bg-gray-600 inline-block text-center mx-2 cursor-not-allowed">Eliminar</a>
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const modificarBtn = document.getElementById('modificar-btn');
+                        const eliminarBtn = document.getElementById('eliminar-btn');
+
+                        const eventList = document.getElementById('eventosPorFecha');
+                        if (eventList && modificarBtn && eliminarBtn) {
+                            eventList.addEventListener('change', function () {
+                                if (this.value) { // Si se ha seleccionado un evento
+                                    modificarBtn.classList.replace('bg-gray-300', 'bg-gray-700');
+                                    eliminarBtn.classList.replace('bg-gray-300', 'bg-gray-700');
+                                    modificarBtn.classList.remove('cursor-not-allowed');
+                                    eliminarBtn.classList.remove('cursor-not-allowed');
+                                } else { // Si no se ha seleccionado ningún evento
+                                    modificarBtn.classList.replace('bg-gray-700', 'bg-gray-300');
+                                    eliminarBtn.classList.replace('bg-gray-700', 'bg-gray-300');
+                                    modificarBtn.classList.add('cursor-not-allowed');
+                                    eliminarBtn.classList.add('cursor-not-allowed');
+                                }
+                            });
+                        }
+                    });
+                </script>
+            {% endif %}
+
     </div>
 
 
@@ -74,6 +99,7 @@
                         <div class="mt-2">
                             {% for evento in eventosPorFecha[day] %}
                                 <button onclick="mostrarEvento(this)"
+                                    data-id-evento="{{ evento.id }}"
                                     data-nombre="{{ evento.nombre|e }}"
                                     data-abreviatura="{{ evento.abreviatura_asignatura|e }}"
                                     data-descripcion="{{ evento.descripcion|e }}"
@@ -100,24 +126,51 @@
 
 <script>
     function mostrarEvento(button) {
-    const nombre = button.getAttribute('data-nombre');
-    const abreviatura = button.getAttribute('data-abreviatura');
-    const fecha = button.getAttribute('data-fecha');
-    const nombre_asignatura = button.getAttribute('data-nombre_asignatura');
-    const anotaciones = button.getAttribute('data-anotaciones');
-    const usuario = button.getAttribute('data-usuario');
+        const nombre = button.getAttribute('data-nombre');
+        const idEvento = button.getAttribute('data-id-evento');
+        const abreviatura = button.getAttribute('data-abreviatura');
+        const fecha = button.getAttribute('data-fecha');
+        const nombre_asignatura = button.getAttribute('data-nombre_asignatura');
+        const anotaciones = button.getAttribute('data-anotaciones');
+        const usuario = button.getAttribute('data-usuario');
 
-    const eventViewer = document.getElementById('eventViewer');
-    eventViewer.innerHTML = `
-        <h4 class="text-xl">Evento seleccionado</h4>
-        <p><i class="fa-solid fa-calendar-days"></i> ${fecha}</p>
-        <p><i class="fa-solid fa-graduation-cap"></i> ${nombre_asignatura}</p>
-        <p><i class="fa-solid fa-circle-info"></i> ${nombre}</p>
-        ${anotaciones ? `<p><i class="fa-solid fa-file"></i> ${anotaciones}</p>` : ''}
-        ${usuario ? `<p><i class="fa-solid fa-user"></i> ${usuario}</p>` : ''}
-    `;
-}
+        const eventViewer = document.getElementById('eventViewer');
+        eventViewer.innerHTML = `
+            <h4 class="text-xl">Evento seleccionado</h4>
+            <p><i class="fa-solid fa-calendar-days"></i> ${fecha}</p>
+            <p><i class="fa-solid fa-graduation-cap"></i> ${nombre_asignatura}</p>
+            <p><i class="fa-solid fa-circle-info"></i> ${nombre}</p>
+            ${anotaciones ? `<p><i class="fa-solid fa-file"></i> ${anotaciones}</p>` : ''}
+            ${usuario ? `<p><i class="fa-solid fa-user"></i> ${usuario}</p>` : ''}
+        `;
+
+        const modificarBtn = document.getElementById('modificar-btn');
+        const eliminarBtn = document.getElementById('eliminar-btn');
+
+        if (modificarBtn && eliminarBtn) {
+            if (nombre) { // Si se ha seleccionado un evento
+                modificarBtn.classList.replace('bg-gray-300', 'bg-gray-700');
+                eliminarBtn.classList.replace('bg-gray-300', 'bg-gray-700');
+                modificarBtn.classList.remove('cursor-not-allowed');
+                eliminarBtn.classList.remove('cursor-not-allowed');
+
+                // Actualizar el href con el id del evento
+                modificarBtn.href = `../Evento/showModificarEvento?id=${idEvento}`;
+                eliminarBtn.href = `../Evento/showEliminarEvento?id=${idEvento}`;
+            } else { // Si no se ha seleccionado ningún evento
+                modificarBtn.classList.replace('bg-gray-700', 'bg-gray-300');
+                eliminarBtn.classList.replace('bg-gray-700', 'bg-gray-300');
+                modificarBtn.classList.add('cursor-not-allowed');
+                eliminarBtn.classList.add('cursor-not-allowed');
+
+                // Restaurar los href a sus valores originales
+                modificarBtn.href = '../Evento/listarEventos';
+                eliminarBtn.href = '../Evento/listarEventos';
+            }
+        }
+    }
 </script>
+
 <br>
 </body>
 </html>

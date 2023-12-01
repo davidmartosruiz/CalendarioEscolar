@@ -595,6 +595,11 @@ video {
   margin-right: 0.5rem;
 }
 
+.mx-4 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
 .mb-1 {
   margin-bottom: 0.25rem;
 }
@@ -685,6 +690,10 @@ video {
 
 .border-collapse {
   border-collapse: collapse;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
 }
 
 .appearance-none {
