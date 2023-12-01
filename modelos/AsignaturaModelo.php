@@ -1,5 +1,5 @@
 <?php
-require_once "database/Conexion.php";
+require_once "../database/Conexion.php";
 
 class Asignatura {
 

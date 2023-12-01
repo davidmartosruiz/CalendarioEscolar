@@ -50,6 +50,7 @@ class UsuarioControlador extends Controlador {
             // Iniciamos la sesión
             $_SESSION["loggedin"] = true;
             $_SESSION["email"] = $email;
+            $_SESSION["id"] = $usuario->id;
             // Redirigimos a la página de inicio
             header("Location: ../Evento/listarEventos") ;
         } else {

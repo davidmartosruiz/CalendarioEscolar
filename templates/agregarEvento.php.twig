@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Calendario escolar</title>
+    <link rel="icon" type="image/png" href="../public/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../public/dist/output.css" rel="stylesheet">
+    <link href="../public/css/fontawesome-free-6.5.0-web/css/all.css" rel="stylesheet">
+</head>
+<body>
+{% if loggedin %}
+  <div class="container mx-auto px-4">
+    <h2 class="text-2xl font-bold mb-4">Agregar nuevo evento</h2>
+    <form action="" method="POST">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="fecha">Fecha</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="fecha" type="date" name="fecha" required>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="asignatura_id">Módulo profesional</label>
+        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="asignatura_id" name="asignatura_id" required>
+          <option value="" disabled selected>Selecciona una opción</option>
+          {% for asignatura in asignaturas %}
+            <option value="{{ asignatura.id }}">{{ asignatura.nombre }}</option>
+          {% else %}
+            <option disabled>No hay asignaturas disponibles.</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="nombre">Evento</label>
+        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="nombre" name="nombre" required onchange="checkCustomOption(this)">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="Examen">Examen</option>
+          <option value="Entrega actividades">Entrega actividades</option>
+          <option value="Entrega trabajo">Entrega trabajo</option>
+          <option value="Exposición">Exposición</option>
+          
+          <option value="" disabled></option>
+          
+          <option value="Apertura plazo">Apertura plazo</option>
+          <option value="Finalización plazo">Finalización plazo</option>
+          
+          <option value="" disabled></option>
+          
+          <option value="Festivo">Festivo</option>
+          <option value="Vacaciones">Vacaciones</option>
+          <option value="Huelga convocada">Huelga convocada</option>
+          
+          <option value="" disabled></option>
+          <option value="Personalizar">Personalizar</option>
+        </select>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2" id="nombre_personalizado" type="text" name="nombre_personalizado" style="display: none;">
+      </div>
+
+      <script>
+        function checkCustomOption(select) {
+          var customOption = document.getElementById('nombre_personalizado');
+          if (select.value === 'Personalizar') {
+            customOption.style.display = 'block';
+          } else {
+            customOption.style.display = 'none';
+          }
+        }
+      </script>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="anotaciones">Anotaciones</label>
+        <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="anotaciones" name="anotaciones"></textarea>
+      </div>
+      <div class="flex items-center justify-between">
+        <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400" type="submit">Agregar evento</button>
+      </div>
+    </form>
+  </div>
+{% endif %}
+
+<script>
+function toggleForm() {
+  const form = document.getElementById('addEventForm');
+  if (form.style.display === "none") {
+    form.style.display = "block";
+  } else {
+    form.style.display = "none";
+  }
+}
+</script>
+</body>

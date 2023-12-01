@@ -1,16 +1,52 @@
 <?php
 require_once "../modelos/EventoModelo.php";
+require_once "../modelos/AsignaturaModelo.php";
 require_once "../vendor/autoload.php";
 
 class EventoControlador {
     private $evento;
+    private $twig;
 
-    public function __construct() {
-        $this->evento = new Evento();
-    }
+
+        public function __construct() {
+            $loader = new \Twig\Loader\FilesystemLoader('../templates');
+            $this->twig = new \Twig\Environment($loader);
+        }
+
+
 
     public function agregarEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones) {
         return Evento::crearEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones);
+    }
+
+    public function showAgregarEvento() {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        // Verifica si el usuario ya ha iniciado sesión
+        $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
+    
+        // Mostrar la vista del formulario para agregar un evento
+        $asignaturaModel = new Asignatura();
+
+        // Obtener todas las asignaturas
+        $asignaturas = $asignaturaModel->getAllAsignaturas();
+
+        // Pasar las asignaturas a la vista
+        echo $this->twig->render("agregarEvento.php.twig", ["loggedin" => $loggedin, "asignaturas" => $asignaturas]);
+
+        // Usuario ID será el ID del usuario que ha iniciado sesión
+        $usuario_id = $_SESSION['id'];
+
+        // Si el formulario se ha enviado, procesarlo
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $nombre = !empty($_POST['nombre_personalizado']) ? $_POST['nombre_personalizado'] : $_POST['nombre'];
+            $fecha = $_POST['fecha'];
+            $asignatura_id = $_POST['asignatura_id'];
+            $anotaciones = $_POST['anotaciones'];
+
+            $this->agregarEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones);
+        }
     }
 
     public function modificarEvento($id, $nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones) {

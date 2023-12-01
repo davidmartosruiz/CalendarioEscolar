@@ -22,8 +22,13 @@
     //echo "Nombre del método: {$metodo}<br/>" ;
 
     // importamos el archivo xxxxController.php
-    require_once "../controladores/{$nombreControlador}.php" ;
-
+    $controladorPath = "../controladores/{$nombreControlador}.php";
+    if (file_exists($controladorPath)) {
+        require_once $controladorPath;
+    } else {
+        die("Se ha producido un error en el controlador.");
+    }
+    
     // instanciar la clase controladora
     $instanciaControlador = new $nombreControlador ;
 

@@ -23,22 +23,29 @@
         </div>
     </div>
     <div class="container mx-auto mt-6 flex">
-    <!-- Columna de Visualizador de Eventos -->
-    <div class="w-2/6 p-4 bg-gray-200 rounded-md mr-2">
-    <div class="flex items-center justify-between">
-        <a href="?fecha={{ prevMonth }}" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">&lt;</a>
-        
-        <h2 class="text-center text-2xl font-semibold">
-            {{ nombreMes(calendar.format('Y-m-25')) }} {{ calendar.format('Y') }}
-        </h2>
-        
-        <a href="?fecha={{ nextMonth }}" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">&gt;</a>
-    </div>
+        <!-- Columna de Visualizador de Eventos -->
+        <div class="w-2/6 p-4 bg-gray-200 rounded-md mr-2">
+        <div class="flex items-center justify-between">
+            <a href="?fecha={{ prevMonth }}" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">&lt;</a>
+            
+            <h2 class="text-center text-2xl font-semibold">
+                {{ nombreMes(calendar.format('Y-m-25')) }} {{ calendar.format('Y') }}
+            </h2>
+            
+            <a href="?fecha={{ nextMonth }}" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">&gt;</a>
+        </div>
 
-    <div id="eventViewer" class="mt-4">
-        <h4 class="text-lg">Selecciona un evento para mostrarlo</h4>
+        <div id="eventViewer" class="mt-4">
+            <h4 class="text-lg">Selecciona un evento para mostrarlo</h4>
+        </div>
+        {% if loggedin %}
+            <div class="mt-4 flex justify-center">
+                <a href="../Evento/agregarEvento" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 inline-block text-center mx-2">Añadir</a>
+                <a href="../Evento/modificarEvento" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 inline-block text-center mx-2">Modificar</a>
+                <a href="../Evento/eliminarEvento" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 inline-block text-center mx-2">Eliminar</a>
+            </div>
+        {% endif %}
     </div>
-</div>
 
 
     <!-- Columna de Calendario -->
