@@ -73,6 +73,55 @@ class EventoControlador {
         return Evento::actualizarEvento($id, $nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones);
     }
 
+    public function showModificarEvento() {
+        error_reporting(E_ALL & ~E_WARNING);
+
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Verifica si el usuario ya ha iniciado sesión
+        $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
+
+        // Usuario ID será el ID del usuario que ha iniciado sesión
+        $usuario_id = $_SESSION['id'];
+
+        // Si el formulario se ha enviado, procesarlo
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            try {
+                $id = $_POST['id'];
+                $nombre = !empty($_POST['nombre_personalizado']) ? $_POST['nombre_personalizado'] : $_POST['nombre'];
+                $fecha = $_POST['fecha'];
+                $asignatura_id = $_POST['asignatura_id'];
+                $anotaciones = $_POST['anotaciones'];
+
+                $this->modificarEvento($id, $nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones);
+
+                // Redirige a la página de listar eventos después de modificar el evento
+                header('Location: ../Evento/listarEventos');
+                exit();
+            } catch (Exception $e) {
+                // Aquí puedes manejar la excepción como prefieras
+                echo "<div class=\"bg-red-500 text-white py-2 px-4\">Error: ",  $e->getMessage(), "\n</div>";
+            }
+        } else {
+            // Obtener el ID del evento de la URL
+            $id = $_GET['evento'];
+
+            // Obtener el evento de la base de datos
+            $evento = Evento::getEventoById($id);
+
+            // Mostrar la vista del formulario para modificar un evento
+            $asignaturaModel = new Asignatura();
+
+            // Obtener todas las asignaturas
+            $asignaturas = $asignaturaModel->getAllAsignaturas();
+
+            // Pasar los datos del evento y las asignaturas a la vista
+            echo $this->twig->render("modificarEvento.php.twig", ["loggedin" => $loggedin, "evento" => $evento, "asignaturas" => $asignaturas]);
+        }
+    }
+
     public function eliminarEvento($id) {
         return Evento::eliminarEvento($id);
     }

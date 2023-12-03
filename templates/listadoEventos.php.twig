@@ -154,8 +154,8 @@
                 eliminarBtn.classList.remove('cursor-not-allowed');
 
                 // Actualizar el href con el id del evento
-                modificarBtn.href = `../Evento/showModificarEvento?id=${idEvento}`;
-                eliminarBtn.href = `../Evento/showEliminarEvento?id=${idEvento}`;
+                modificarBtn.href = `../Evento/showModificarEvento?evento=${idEvento}`;
+                eliminarBtn.href = `../Evento/showEliminarEvento?evento=${idEvento}`;
             } else { // Si no se ha seleccionado ningún evento
                 modificarBtn.classList.replace('bg-gray-700', 'bg-gray-300');
                 eliminarBtn.classList.replace('bg-gray-700', 'bg-gray-300');

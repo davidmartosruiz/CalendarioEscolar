@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Añadir evento - Calendario escolar</title>
+    <title>Modificar evento - Calendario escolar</title>
     <link rel="icon" type="image/png" href="../public/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../public/dist/output.css" rel="stylesheet">
@@ -17,18 +17,19 @@
     </div>
 {% if loggedin %}
   <div class="container mx-auto px-4 mt-6">
-    <h2 class="text-2xl font-bold mb-4">Agregar nuevo evento</h2>
+    <h2 class="text-2xl font-bold mb-4">Modificar evento</h2>
     <form action="" method="POST">
+      <input type="hidden" name="id" value="{{ evento.id }}">
       <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="fecha">Fecha</label>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="fecha" type="date" name="fecha" required>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="fecha" type="date" name="fecha" value="{{ evento.fecha }}" required>
       </div>
       <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="asignatura_id">Módulo profesional</label>
         <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="asignatura_id" name="asignatura_id" required>
-          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="" disabled>Selecciona una opción</option>
           {% for asignatura in asignaturas %}
-            <option value="{{ asignatura.id }}">{{ asignatura.nombre }}</option>
+            <option value="{{ asignatura.id }}" {% if asignatura.id == evento.asignatura_id %}selected{% endif %}>{{ asignatura.nombre }}</option>
           {% else %}
             <option disabled>No hay asignaturas disponibles.</option>
           {% endfor %}
@@ -57,26 +58,40 @@
           <option value="" disabled></option>
           <option value="Personalizar">Personalizar</option>
         </select>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2" id="nombre_personalizado" type="text" name="nombre_personalizado" style="display: none;">
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2 hidden" id="nombre_personalizado" type="text" name="nombre_personalizado">
       </div>
 
       <script>
         function checkCustomOption(select) {
           var customOption = document.getElementById('nombre_personalizado');
           if (select.value === 'Personalizar') {
-            customOption.style.display = 'block';
+            customOption.classList.remove('hidden');
           } else {
-            customOption.style.display = 'none';
+            customOption.classList.add('hidden');
             customOption.value = ''; // Borra el valor del campo de entrada personalizado
+          }
+        }
+
+        window.onload = function() {
+          var select = document.getElementById('nombre');
+          var customOption = document.getElementById('nombre_personalizado');
+          var eventName = "{{ evento.nombre }}"; // Obtén el nombre del evento desde Twig
+
+          if (![...select.options].map(option => option.value).includes(eventName)) {
+            select.value = 'Personalizar';
+            customOption.value = eventName;
+            customOption.classList.remove('hidden');
+          } else {
+            select.value = eventName;
           }
         }
       </script>
       <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="anotaciones">Anotaciones</label>
-        <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="anotaciones" name="anotaciones"></textarea>
+        <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="anotaciones" name="anotaciones">{{ evento.anotaciones }}</textarea>
       </div>
       <div class="flex items-center justify-between">
-        <button class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600" type="submit">Agregar evento</button>
+        <button class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600" type="submit">Modificar evento</button>
       </div>
     </form>
   </div>
