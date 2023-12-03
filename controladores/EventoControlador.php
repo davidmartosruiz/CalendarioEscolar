@@ -16,16 +16,49 @@ class EventoControlador {
 
 
     public function agregarEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones) {
-        return Evento::crearEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones);
+        if(empty($nombre) || empty($fecha) || empty($asignatura_id) || empty($usuario_id)) {
+            throw new Exception('Todos los campos son requeridos');
+        }
+
+        try {
+            $evento = Evento::crearEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones);
+        } catch (Exception $e) {
+            // Manejar la excepción
+            echo 'Error: ',  $e->getMessage(), "\n";
+        }
     }
 
     public function showAgregarEvento() {
+        error_reporting(E_ALL & ~E_WARNING);
+
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
         // Verifica si el usuario ya ha iniciado sesión
         $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
-    
+
+        // Usuario ID será el ID del usuario que ha iniciado sesión
+        $usuario_id = $_SESSION['id'];
+
+        // Si el formulario se ha enviado, procesarlo
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            try {
+                $nombre = !empty($_POST['nombre_personalizado']) ? $_POST['nombre_personalizado'] : $_POST['nombre'];
+                $fecha = $_POST['fecha'];
+                $asignatura_id = $_POST['asignatura_id'];
+                $anotaciones = $_POST['anotaciones'];
+
+                $this->agregarEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones);
+
+                // Redirige a la página de listar eventos después de agregar el evento
+                header('Location: ../Evento/listarEventos');
+                exit();
+            } catch (Exception $e) {
+                // Aquí puedes manejar la excepción como prefieras
+                echo "<div class=\"bg-red-500 text-white py-2 px-4\">Error: ",  $e->getMessage(), "\n</div>";
+            }
+        }
+
         // Mostrar la vista del formulario para agregar un evento
         $asignaturaModel = new Asignatura();
 
@@ -34,19 +67,6 @@ class EventoControlador {
 
         // Pasar las asignaturas a la vista
         echo $this->twig->render("agregarEvento.php.twig", ["loggedin" => $loggedin, "asignaturas" => $asignaturas]);
-
-        // Usuario ID será el ID del usuario que ha iniciado sesión
-        $usuario_id = $_SESSION['id'];
-
-        // Si el formulario se ha enviado, procesarlo
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $nombre = !empty($_POST['nombre_personalizado']) ? $_POST['nombre_personalizado'] : $_POST['nombre'];
-            $fecha = $_POST['fecha'];
-            $asignatura_id = $_POST['asignatura_id'];
-            $anotaciones = $_POST['anotaciones'];
-
-            $this->agregarEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones);
-        }
     }
 
     public function modificarEvento($id, $nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones) {

@@ -7,3 +7,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 
 # Redirecciona las solicitudes a index.php
 RewriteRule ^([^/]+)/([^/]+)/?$ index.php?con=$1&met=$2 [L,QSA]
+
+# Redirecciona las solicitudes a index.php sin nada más a /Eventos/listarEventos
+RewriteRule ^index\.php$ ../Evento/listarEventos [R,L]
+RewriteRule ^$ ../Evento/listarEventos [R,L]

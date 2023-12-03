@@ -17,7 +17,7 @@ class Conexion {
                 throw new Exception("No se encontró el archivo .env");
             }
         } catch (Exception $e) {
-            die("** Error de conexión con la base de datos: " . $e->getMessage());
+            die("<div style=\"background-color: red; color: white; padding: 6px; border-radius: 5px; font-family: sans-serif;\">Error en la conexión a la base de datos, si el problema persiste, contacte con el administrador.</div>");
         }
     }
 
