@@ -97,8 +97,53 @@ class UsuarioControlador extends Controlador {
         echo $this->render("admin.php.twig", ["loggedin" => $loggedin, "usuarios" => $usuarios, "error" => $error]) ;
     }
 
-    /**
-     */
+    
+    public function agregarUsuario($nombre, $email, $password) {
+        if(empty($nombre) || empty($email) || empty($password)) {
+            throw new Exception('Todos los campos son requeridos');
+        }
+
+        try {
+            $usuario = Usuario::crearUsuario($nombre, $email, $password);
+        } catch (Exception $e) {
+            // Manejar la excepción
+            echo 'Error: ',  $e->getMessage(), "\n";
+        }
+    }
+
+    public function showAgregarUsuario() {
+        error_reporting(E_ALL & ~E_WARNING);
+
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        // Verifica si el usuario ya ha iniciado sesión
+        $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
+
+        // Si el formulario se ha enviado, procesarlo
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            try {
+                $nombre = $_POST['nombre'];
+                $email = $_POST['email'];
+                $password = $_POST['password'];
+
+                $this->agregarUsuario($nombre, $email, $password);
+
+                // Redirige a la página de listar usuarios después de agregar el usuario
+                header('Location: ../Usuario/showAdmin');
+                exit();
+            } catch (Exception $e) {
+                // Aquí puedes manejar la excepción como prefieras
+                echo "<div class=\"bg-red-500 text-white py-2 px-4\">Error: ",  $e->getMessage(), "\n</div>";
+            }
+        }
+
+        // Mostrar la vista del formulario para agregar un usuario
+        echo $this->render("agregarUsuario.php.twig", ["loggedin" => $loggedin]);
+    }
+
+
+
     public function eliminar() {
 
         $id = $_GET["id"];            

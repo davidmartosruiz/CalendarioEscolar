@@ -29,5 +29,11 @@ class Usuario {
         $result = $stmt->fetch();
         return $result !== false ? $result : null;
     }
-    
+
+    public static function crearUsuario(string $nombre, string $email, string $password): bool {
+        $pdo = Conexion::getConnection();
+        $stmt = $pdo->prepare("INSERT INTO usuarios (nombre, email, password) VALUES (:nombre, :email, :password)");
+        $result = $stmt->execute(['nombre' => $nombre, 'email' => $email, 'password' => password_hash($password, PASSWORD_DEFAULT)]);
+        return $result;
+    }
 }

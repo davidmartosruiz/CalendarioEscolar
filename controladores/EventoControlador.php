@@ -217,7 +217,7 @@ class EventoControlador {
             ];
         
             if (empty($fecha)) {
-                // Handle the case where $fecha is null or empty
+                // En el caso de que fecha sea nula
                 return 'Fecha no proporcionada';
             }
         

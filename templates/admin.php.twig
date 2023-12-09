@@ -38,16 +38,22 @@
               <td class="p-3 px-5">{{ usuario.nombre }}</td>
               <td class="p-3 px-5">{{ usuario.email }}</td>
               <td class="p-3 px-5">
-                <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Modificar</button>
+                <a href="../Usuario/showModificarUsuario?usuario={{ usuario.id }}">
+                  <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Modificar</button>
+                </a>
               </td>
               <td class="p-3 px-5">
-                <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Eliminar</button>
+                <a href="../Usuario/showEliminarUsuario?usuario={{ usuario.id }}">
+                  <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Eliminar</button>
+                </a>
               </td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
-      <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-4">Añadir</button>
+      <a href="../Usuario/showAgregarUsuario">
+        <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-4">Añadir</button>
+      </a>
     </div>
   </div>
 </body>
