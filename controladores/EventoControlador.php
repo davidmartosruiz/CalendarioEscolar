@@ -190,6 +190,13 @@ class EventoControlador {
         }
     }
 
+    public function exportarEventos() {
+        $eventos = Evento::getAllEventos();
+        header('Content-type: text/calendar');
+        header('Content-Disposition: attachment; filename="calendario.ics"');
+        echo $this->twig->render('exportarEventos.php.twig', ['eventos' => $eventos]);
+    }
+
 
     public function listarEventos() {
         global $twig;

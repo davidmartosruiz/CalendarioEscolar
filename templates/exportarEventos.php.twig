@@ -1,0 +1,18 @@
+{% set ical %}
+BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Tus Eventos
+X-WR-CALDESC:Tus eventos de calendario
+{% for evento in eventos %}
+BEGIN:VEVENT
+SUMMARY:{{ evento.nombre }} - {{ evento.abreviatura_asignatura }}
+DESCRIPTION:{{ evento.anotaciones }}
+DTSTART;VALUE=DATE:{{ evento.fecha|date('Ymd') }}
+DTEND;VALUE=DATE:{{ evento.fecha|date('Ymd') }}
+END:VEVENT
+{% endfor %}
+END:VCALENDAR
+{% endset %}
+{{ ical }}
