@@ -7,30 +7,39 @@ class Asignatura {
     public string $nombre;
     public string $abreviatura;
 
-    /**
-     * Recupera todas las asignaturas de la base de datos y las
-     * devuelve en formato array.
-     * @return array
-     */
     public static function getAllAsignaturas(): array {
-        return Conexion::getConnection()
-                        ->query("SELECT * FROM asignaturas;")
-                        ->fetchAll(PDO::FETCH_CLASS, "Asignatura");
+        $pdo = Conexion::getConnection();
+        $stmt = $pdo->query("SELECT * FROM asignaturas");
+        return $stmt->fetchAll(PDO::FETCH_CLASS, "Asignatura");
     }
 
-    /**
-     * Recupera una asignatura específica por su ID.
-     * @param int $id
-     * @return Asignatura|null
-     */
     public static function getAsignaturaById(int $id): ?Asignatura {
-        $stmt = Conexion::getConnection()
-                        ->prepare("SELECT * FROM asignaturas WHERE id = :id;");
+        $pdo = Conexion::getConnection();
+        $stmt = $pdo->prepare("SELECT * FROM asignaturas WHERE id = :id");
         $stmt->execute(['id' => $id]);
         $stmt->setFetchMode(PDO::FETCH_CLASS, "Asignatura");
-        return $stmt->fetch();
+
+        $result = $stmt->fetch();
+        return $result !== false ? $result : null;
     }
 
-    // Puedes agregar más métodos estáticos según sea necesario...
+    public static function crearAsignatura(string $nombre, string $abreviatura): bool {
+        $pdo = Conexion::getConnection();
+        $stmt = $pdo->prepare("INSERT INTO asignaturas (nombre, abreviatura) VALUES (:nombre, :abreviatura)");
+        $result = $stmt->execute(['nombre' => $nombre, 'abreviatura' => $abreviatura]);
+        return $result;
+    }
+
+    public static function actualizarAsignatura($id, $nombre, $abreviatura): bool {
+        $stmt = Conexion::getConnection()
+                        ->prepare("UPDATE asignaturas SET nombre = :nombre, abreviatura = :abreviatura WHERE id = :id;");
+        return $stmt->execute(['id' => $id, 'nombre' => $nombre, 'abreviatura' => $abreviatura]);
+    }
+
+    public static function eliminarAsignatura($id): bool {
+        $stmt = Conexion::getConnection()
+                        ->prepare("DELETE FROM asignaturas WHERE id = :id;");
+        return $stmt->execute(['id' => $id]);
+    }
 }
 ?>
