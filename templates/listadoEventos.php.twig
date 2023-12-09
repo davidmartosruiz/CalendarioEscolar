@@ -14,11 +14,13 @@
         <div class="flex justify-center space-x-4 mt-2">
             {% if loggedin %}
                 <a href="../Usuario/logout" class="hover:text-gray-300">Cerrar sesión</a>
+                <a href="../Usuario/showAdmin" class="hover:text-gray-300">Administrar usuarios</a>
+                <a href="../Usuario/showAdminNewsletter" class="hover:text-gray-300">Administrar notificaciones</a>
             {% else %}
                 <a href="../Usuario/showLogin" class="hover:text-gray-300">Acceso administrador</a>
+                <a href="../Usuario/showNewsletter" class="hover:text-gray-300">Registrarse en la newsletter</a>
             {% endif %}
-            <a href="exportarCalendario.php" class="hover:text-gray-300">Exportar calendario</a>
-            <a href="/" class="hover:text-gray-300">Vista listado</a>
+            <a href="../Evento/exportarEventos" class="hover:text-gray-300">Exportar calendario</a>
         </div>
     </div>
     <div class="container mx-auto mt-6 flex">
@@ -86,6 +88,7 @@
             </tr>
             {% for fecha in dias %}
                 {% set day = fecha|date('Y-m-d') %}
+                {% set today = "now"|date('Y-m-d') %}
                 {% if loop.index0 % 7 == 0 %}
                     {% if not loop.first %}
                         </tr>
@@ -93,7 +96,9 @@
                     <tr>
                 {% endif %}
                 <td class="{{ day|date('m') != calendar|date('m') ? 'bg-gray-200' : 'bg-gray-100' }} border px-4 align-baseline py-2 table-cell w-28 h-28">
-                    {{ day|date('j') }}
+                    <span class="{{ day == today ? 'text-red-500 font-bold' : (day|date('m') != calendar|date('m') ? 'text-gray-200' : 'text-gray-100') }}">
+                        {{ day|date('j') }}
+                    </span>
                     {% if eventosPorFecha[day] %}
                         <div class="mt-2">
                             {% for evento in eventosPorFecha[day] %}
@@ -138,7 +143,7 @@
             <h4 class="text-xl">Evento seleccionado</h4>
             <p><i class="fa-solid fa-calendar-days"></i> ${fecha}</p>
             <p><i class="fa-solid fa-graduation-cap"></i> ${nombre_asignatura}</p>
-            <p><i class="fa-solid fa-circle-info"></i> ${nombre}</p>
+            <p><i class="fa-solid fa-book"></i> ${nombre}</p>
             ${anotaciones ? `<p><i class="fa-solid fa-file"></i> ${anotaciones}</p>` : ''}
             ${usuario ? `<p><i class="fa-solid fa-user"></i> ${usuario}</p>` : ''}
         `;

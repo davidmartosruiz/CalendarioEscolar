@@ -126,6 +126,43 @@ class EventoControlador {
         return Evento::eliminarEvento($id);
     }
 
+    public function showEliminarEvento() {
+        error_reporting(E_ALL & ~E_WARNING);
+
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Verifica si el usuario ya ha iniciado sesión
+        $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
+
+        // Obtener el ID del evento de la URL
+        $id = $_GET['evento'];
+
+        // Obtener el evento de la base de datos
+        $evento = Evento::getEventoById($id);
+
+        // Si el formulario se ha enviado, procesarlo
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            try {
+                // Obtener la fecha del evento
+                $fecha = substr($evento->fecha, 0, 7);
+
+                $this->eliminarEvento($id);
+
+                // Redirige a la página de listar eventos después de eliminar el evento
+                header("Location: ../Evento/listarEventos?fecha=" . $fecha);
+                exit();
+            } catch (Exception $e) {
+                // Aquí puedes manejar la excepción como prefieras
+                echo "<div class=\"bg-red-500 text-white py-2 px-4\">Error: ",  $e->getMessage(), "\n</div>";
+            }
+        } else {
+            // Mostrar la vista de confirmación de eliminación
+            echo $this->twig->render("eliminarEvento.php.twig", ["loggedin" => $loggedin, "evento" => $evento]);
+        }
+    }
+
 
     public function listarEventos() {
         global $twig;
@@ -169,44 +206,44 @@ class EventoControlador {
         }
     
         // Utilizar la fecha de la URL si está disponible, de lo contrario, usar la fecha actual
-    $fechaURL = $_GET['fecha'] ?? date('Y-m');
-    $fechaActual = new DateTime($fechaURL);
+        $fechaURL = $_GET['fecha'] ?? date('Y-m');
+        $fechaActual = new DateTime($fechaURL);
 
-    // Ajustar para obtener el primer y último día del mes seleccionado
-    $primerDia = new DateTime($fechaActual->format('Y-m-01'));
-    while ($primerDia->format('N') != 1) {
-        $primerDia->modify('-1 day');
+        // Ajustar para obtener el primer y último día del mes seleccionado
+        $primerDia = new DateTime($fechaActual->format('Y-m-01'));
+        while ($primerDia->format('N') != 1) {
+            $primerDia->modify('-1 day');
+        }
+
+        $ultimoDia = new DateTime($fechaActual->format('Y-m-t'));
+        while ($ultimoDia->format('N') != 7) {
+            $ultimoDia->modify('+1 day');
+        }
+
+        // Generar arreglo de fechas para el mes seleccionado
+        $dias = [];
+        for ($dia = clone $primerDia; $dia <= $ultimoDia; $dia->modify('+1 day')) {
+            $dias[] = $dia->format('Y-m-d');
+        }
+
+        // Fechas para navegación
+        $prevMonth = (clone $fechaActual)->modify('-1 month')->format('Y-m');
+        $nextMonth = (clone $fechaActual)->modify('+1 month')->format('Y-m');
+
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        // Verifica si el usuario ya ha iniciado sesión
+        $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
+
+        // Renderiza la plantilla con Twig
+        echo $twig->render('listadoEventos.php.twig', [
+            'eventosPorFecha' => $eventosPorFecha,
+            'dias' => $dias,
+            'calendar' => $fechaActual,
+            'prevMonth' => $prevMonth,
+            'nextMonth' => $nextMonth,
+            "loggedin" => $loggedin
+        ]);
     }
-
-    $ultimoDia = new DateTime($fechaActual->format('Y-m-t'));
-    while ($ultimoDia->format('N') != 7) {
-        $ultimoDia->modify('+1 day');
-    }
-
-    // Generar arreglo de fechas para el mes seleccionado
-    $dias = [];
-    for ($dia = clone $primerDia; $dia <= $ultimoDia; $dia->modify('+1 day')) {
-        $dias[] = $dia->format('Y-m-d');
-    }
-
-    // Fechas para navegación
-    $prevMonth = (clone $fechaActual)->modify('-1 month')->format('Y-m');
-    $nextMonth = (clone $fechaActual)->modify('+1 month')->format('Y-m');
-
-    if (session_status() == PHP_SESSION_NONE) {
-        session_start();
-    }
-    // Verifica si el usuario ya ha iniciado sesión
-    $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
-
-    // Renderiza la plantilla con Twig
-    echo $twig->render('listadoEventos.php.twig', [
-        'eventosPorFecha' => $eventosPorFecha,
-        'dias' => $dias,
-        'calendar' => $fechaActual,
-        'prevMonth' => $prevMonth,
-        'nextMonth' => $nextMonth,
-        "loggedin" => $loggedin
-    ]);
-}
 }

@@ -7,12 +7,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title></title>
+    <meta charset="UTF-8">
+    <title>Calendario escolar</title>
+    <link rel="icon" type="image/png" href="../public/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../public/dist/output.css" rel="stylesheet">
     <link href="../public/css/fontawesome-free-6.5.0-web/css/all.css" rel="stylesheet">
 </head>
+<body class="bg-gray-100">
+    <div class="text-center py-4 bg-gray-800 text-white">
+        <h1 class="text-xl font-bold">Calendario escolar</h1>
+        <div class="flex justify-center space-x-4 mt-2">
+            <a href="../Evento/listarEventos" class="hover:text-gray-300">Volver atrás</a>
+        </div>
+    </div>
 <body class="bg-gray-100">
 
     <div class="container mx-auto my-8">
@@ -21,19 +29,19 @@
             <input type="hidden" name="_csrf" value="{{ token }}" />
 
             <!-- Email -->
-            <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="grid grid-cols-1 gap-4 mb-4">
                 <label for="email" class="text-sm font-semibold">Email:</label>
                 <input id="email" type="email" name="email" value="juan@neatly.es" class="p-2 border rounded focus:outline-none focus:border-blue-500">
             </div>
 
             <!-- Contraseña -->
-            <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="grid grid-cols-1 gap-4 mb-4">
                 <label for="password" class="text-sm font-semibold">Contraseña:</label>
                 <input id="password" type="password" name="password" class="p-2 border rounded focus:outline-none focus:border-blue-500">
             </div>
 
             <div class="mb-8">
-                <button type="submit" class="bg-gray-800 text-white py-2 px-4 rounded w-1/4">Enviar Datos</button>
+                <button type="submit" class="bg-gray-800 text-white py-2 px-4 rounded w-1/4">Iniciar sesión</button>
             </div>
         </form>
 
@@ -48,7 +56,6 @@
                 Para acceder a esa página, debes iniciar sesión.
             </div>
         {% endif %}
-
 
     </div>
 </body>
