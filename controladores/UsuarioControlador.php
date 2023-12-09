@@ -93,8 +93,11 @@ class UsuarioControlador extends Controlador {
         // Obtenemos todos los usuarios
         $usuarios = Usuario::getAllUsuarios();
 
+        // Obtenemos el ID del usuario logueado
+        $loggedin_user_id = isset($_SESSION['id']) ? $_SESSION['id'] : null;
+
         // Cargamos la vista de admin y le pasamos los usuarios y los parámetros
-        echo $this->render("admin.php.twig", ["loggedin" => $loggedin, "usuarios" => $usuarios, "error" => $error]) ;
+        echo $this->render("admin.php.twig", ["loggedin" => $loggedin, "usuarios" => $usuarios, "error" => $error, "loggedin_user_id" => $loggedin_user_id]) ;
     }
 
     
@@ -142,19 +145,116 @@ class UsuarioControlador extends Controlador {
         echo $this->render("agregarUsuario.php.twig", ["loggedin" => $loggedin]);
     }
 
+    public function modificarUsuario($id, $nombre, $email, $password) {
+        return Usuario::actualizarUsuario($id, $nombre, $email, $password);
+    }
 
+    public function showModificarUsuario() {
+        error_reporting(E_ALL & ~E_WARNING);
 
-    public function eliminar() {
-
-        $id = $_GET["id"];            
-        $usuario = Usuario::getUsuario($id);
-
-        // Verificamos el token
-        if (!Token::check($_SESSION["_csrf"], $token)) {
-            die("Invalid CSRF token");
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
         }
 
-        echo "BORRADO!!!!" ;
-        $usuario->borrar();
+        // Verifica si el usuario ya ha iniciado sesión
+        $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
+
+        // Usuario ID será el ID del usuario que ha iniciado sesión
+        $usuario_id = $_SESSION['id'];
+
+        // Si el formulario se ha enviado, procesarlo
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            try {
+                $id = $_POST['id'];
+                $nombre = $_POST['nombre'];
+                $email = $_POST['email'];
+                $password = !empty($_POST['password']) ? $_POST['password'] : null;
+
+                if ($password !== null) {
+                    $this->modificarUsuario($id, $nombre, $email, $password);
+                } else {
+                    $usuario = Usuario::getUsuarioById($id);
+                    $this->modificarUsuario($id, $nombre, $email, $usuario->password);
+                }
+
+                // Redirige a la página de listar usuarios después de modificar el usuario
+                header('Location: ../Usuario/showAdmin');
+                exit();
+            } catch (Exception $e) {
+                // Redirige a showModificarUsuario con un parámetro de error
+                header('Location: ../Usuario/showModificarUsuario?error=1');
+                exit();
+            }
+        } else {
+            try {
+                // Intenta obtener el ID del usuario de la URL
+                $id = @$_GET['usuario'];
+
+                // Si el ID del usuario no está definido, lanza una excepción
+                if (!isset($id)) {
+                    throw new Exception('ID del usuario no definido');
+                }
+
+                // Obtener el usuario de la base de datos
+                $usuario = Usuario::getUsuarioById($id);
+
+                // Mostrar la vista del formulario para modificar un usuario
+                echo $this->render("modificarUsuario.php.twig", ["loggedin" => $loggedin, "usuario" => $usuario]);
+            } catch (Exception $e) {
+                // Redirige a showModificarUsuario con un parámetro de error
+                header('Location: ../Usuario/showAdmin?error=1');
+                exit();
+            }
+        }
+    }
+
+    public function eliminarUsuario($id) {
+        return Usuario::eliminarUsuario($id);
+    }
+
+    public function showEliminarUsuario() {
+        error_reporting(E_ALL & ~E_WARNING);
+
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Verifica si el usuario ya ha iniciado sesión
+        $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
+
+        try {
+            // Intenta obtener el ID del usuario de la URL
+            $id = @$_GET['usuario'];
+
+            // Si el ID del usuario no está definido, lanza una excepción
+            if (!isset($id)) {
+                throw new Exception('ID del usuario no definido');
+            }
+
+            // Si el usuario intenta eliminarse a sí mismo, redirige con un error
+            if ($id == $_SESSION['id']) {
+                header('Location: ../Usuario/showAdmin?error=3');
+                exit();
+            }
+
+            // Obtener el usuario de la base de datos
+            $usuario = Usuario::getUsuarioById($id);
+
+            // Si el formulario se ha enviado, procesarlo
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $this->eliminarUsuario($id);
+
+                // Redirige a la página de listar usuarios después de eliminar el usuario
+                header("Location: ../Usuario/showAdmin");
+                exit();
+            } else {
+                // Mostrar la vista de confirmación de eliminación
+                echo $this->render("eliminarUsuario.php.twig", ["loggedin" => $loggedin, "usuario" => $usuario]);
+            }
+        } catch (Exception $e) {
+            // Redirige a showEliminarUsuario con un parámetro de error
+            header('Location: ../Usuario/showAdmin?error=1');
+            exit();
+        }
     }
 }

@@ -3,7 +3,21 @@
         window.location.href = "../Usuario/showLogin?error=2";
     </script>
 {% endif %}
-
+{% if error == 1 %}
+  <div class="bg-red-500 text-white py-2 px-4">
+      Ha habido un error en la ejecución. Por favor, inténtalo de nuevo.
+  </div>
+{% endif %}
+{% if error == 2 %}
+  <div class="bg-red-500 text-white py-2 px-4">
+      No puedes eliminar un usuario que tiene eventos creados, deberás primero eliminar todos los eventos a su nombre.
+  </div>
+{% endif %}
+{% if error == 3 %}
+  <div class="bg-red-500 text-white py-2 px-4">
+      No puedes eliminarte a ti mismo.
+  </div>
+{% endif %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -43,9 +57,11 @@
                 </a>
               </td>
               <td class="p-3 px-5">
-                <a href="../Usuario/showEliminarUsuario?usuario={{ usuario.id }}">
-                  <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Eliminar</button>
-                </a>
+                {% if usuario.id != loggedin_user_id %}
+                  <a href="../Usuario/showEliminarUsuario?usuario={{ usuario.id }}">
+                    <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Eliminar</button>
+                  </a>
+                {% endif %}
               </td>
             </tr>
           {% endfor %}

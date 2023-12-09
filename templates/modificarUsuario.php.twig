@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Modificar usuario - Calendario escolar</title>
+    <link rel="icon" type="image/png" href="../public/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../public/dist/output.css" rel="stylesheet">
+    <link href="../public/css/fontawesome-free-6.5.0-web/css/all.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="text-center py-4 bg-gray-800 text-white">
+        <h1 class="text-xl font-bold">Calendario escolar</h1>
+        <div class="flex justify-center space-x-4 mt-2">
+          <a href="../Usuario/showAdmin" class="hover:text-gray-300">Volver atrás</a>
+        </div>
+    </div>
+{% if loggedin %}
+  <div class="container mx-auto px-4 mt-6">
+    <h2 class="text-2xl font-bold mb-4">Modificar usuario</h2>
+    <form action="" method="POST">
+      <input type="hidden" name="id" value="{{ usuario.id }}">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="nombre">Nombre</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="nombre" type="text" name="nombre" value="{{ usuario.nombre }}" required>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email" name="email" value="{{ usuario.email }}" required>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Contraseña</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" name="password">
+        <p class="text-sm text-gray-600">Deja este campo en blanco para mantener la misma contraseña.</p>
+      </div>
+      <div class="flex items-center justify-between">
+        <button class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600" type="submit">Modificar usuario</button>
+      </div>
+    </form>
+    {% if error == 1 %}
+      <div class="bg-red-500 text-white py-2 px-4 rounded">
+          Ha habido un error en la modificación del usuario.
+      </div>
+    {% endif %}
+    </div>
+  {% else %}
+    <!-- Si no está logueado, se redigire al login -->
+    <script>
+      window.location.href = "../Usuario/showLogin?error=2";
+    </script>
+  {% endif %}
+</body>
+</html>
