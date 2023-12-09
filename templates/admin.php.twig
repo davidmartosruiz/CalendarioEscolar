@@ -1,0 +1,56 @@
+{% if loggedin == null %}
+    <script type="text/javascript">
+        window.location.href = "../Usuario/showLogin?error=2";
+    </script>
+{% endif %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de administradores - Calendario escolar</title>
+    <link rel="icon" type="image/png" href="../public/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../public/dist/output.css" rel="stylesheet">
+    <link href="../public/css/fontawesome-free-6.5.0-web/css/all.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="text-center py-4 bg-gray-800 text-white">
+        <h1 class="text-xl font-bold">Calendario escolar</h1>
+        <div class="flex justify-center space-x-4 mt-2">
+            <a href="../Evento/listarEventos" class="hover:text-gray-300">Volver atrás</a>
+        </div>
+    </div>
+<body class="bg-gray-100">
+  <div class="container mx-auto my-8">
+  <h2 class="text-2xl font-bold mb-4">Listado de administradores</h2>
+        <div class="container mx-auto my-8">
+          <table class="w-full text-md bg-white shadow-md rounded mb-4">
+            <thead class="border-b">
+              <tr>
+                <th class="text-left p-3 px-5">Nombre</th>
+                <th class="text-left p-3 px-5">Correo electrónico</th>
+                <th class="text-left p-3 px-5">Modificar</th>
+                <th class="text-left p-3 px-5">Eliminar</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for usuario in usuarios %}
+                <tr class="border-b hover:bg-gray-100">
+                  <td class="p-3 px-5">{{ usuario.nombre }}</td>
+                  <td class="p-3 px-5">{{ usuario.email }}</td>
+                  <td class="p-3 px-5">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Modificar</button>
+                  </td>
+                  <td class="p-3 px-5">
+                    <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Eliminar</button>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4">Añadir</button>
+        </div>
+  </div>
+</body>
+</html>

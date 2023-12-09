@@ -77,6 +77,26 @@ class UsuarioControlador extends Controlador {
         // Redirigimos a la página de inicio
         header("Location: ../Evento/listarEventos") ;
     }
+
+    public function showAdmin() {
+        // Inicia la sesión si no ha sido iniciada
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Verifica si el usuario ya ha iniciado sesión
+        $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
+
+        // Recuperamos el error si lo hay
+        $error = isset($_GET["error"]) ? $_GET["error"] : null ;
+
+        // Obtenemos todos los usuarios
+        $usuarios = Usuario::getAllUsuarios();
+
+        // Cargamos la vista de admin y le pasamos los usuarios y los parámetros
+        echo $this->render("admin.php.twig", ["loggedin" => $loggedin, "usuarios" => $usuarios, "error" => $error]) ;
+    }
+
     /**
      */
     public function eliminar() {

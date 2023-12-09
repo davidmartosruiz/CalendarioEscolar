@@ -99,13 +99,13 @@
           Ha habido un error en las modificación del evento.
       </div>
     {% endif %}
-  </div>
-{% else %}
-<!-- Si no está logueado, se redigire al login -->
-<script>
-  window.location.href = "../Usuario/showLogin?error=2";
-</script>
-{% endif %}
+    </div>
+  {% else %}
+    <!-- Si no está logueado, se redigire al login -->
+    <script>
+      window.location.href = "../Usuario/showLogin?error=2";
+    </script>
+  {% endif %}
 
 <script>
 function toggleForm() {
