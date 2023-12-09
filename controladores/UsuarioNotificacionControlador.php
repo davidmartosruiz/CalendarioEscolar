@@ -35,15 +35,8 @@ class UsuarioNotificacionControlador extends Controlador {
    * @return void
    */
   public function agregarUsuario(string $nombre, string $email): void {
-    // Crear una nueva instancia de UsuarioNotificacion
-    $usuario = new UsuarioNotificacion();
-
-    // Establecer el nombre y el correo electrónico del usuario
-    $usuario->setNombre($nombre);
-    $usuario->setEmail($email);
-
     // Guardar el usuario en la base de datos
-    $usuario->save();
+    UsuarioNotificacion::agregarUsuarioNotificacion($nombre, $email);
   }
 
 
@@ -99,13 +92,8 @@ class UsuarioNotificacionControlador extends Controlador {
         session_start();
       }
 
-      // Verifica si el usuario ya ha iniciado sesión
       $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
 
-      // Usuario ID será el ID del usuario que ha iniciado sesión
-      $usuario_id = $_SESSION['id'];
-
-      // Si el formulario se ha enviado, procesarlo
       if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         try {
           $id = $_POST['id'];
@@ -114,34 +102,72 @@ class UsuarioNotificacionControlador extends Controlador {
 
           $this->modificarUsuario($id, $nombre, $email);
 
-          // Redirige a la página de listar usuarios después de modificar el usuario
           header('Location: ../UsuarioNotificacion/showAdminNewsletter');
           exit();
         } catch (Exception $e) {
-          // Redirige a showModificarUsuarioNotificacion con un parámetro de error
           header('Location: ../UsuarioNotificacion/showModificarUsuarioNotificacion?error=1');
           exit();
         }
       } else {
         try {
-          // Intenta obtener el ID del usuario de la URL
           $id = @$_GET['usuario'];
 
-          // Si el ID del usuario no está definido, lanza una excepción
           if (!isset($id)) {
             throw new Exception('ID del usuario no definido');
           }
 
-          // Obtener el usuario de la base de datos
           $usuario = UsuarioNotificacion::getUsuarioNotificacionById($id);
 
-          // Mostrar la vista del formulario para modificar un usuario
+          if ($usuario === null) {
+            throw new Exception('Usuario no encontrado');
+          }
+
           echo $this->render("modificarUsuarioNotificacion.php.twig", ["loggedin" => $loggedin, "usuario" => $usuario]);
         } catch (Exception $e) {
-          // Redirige a showModificarUsuarioNotificacion con un parámetro de error
           header('Location: ../UsuarioNotificacion/showAdminNewsletter?error=1');
           exit();
         }
+      }
+    }
+
+    public function eliminarUsuario($id) {
+      return UsuarioNotificacion::eliminarUsuarioNotificacion($id);
+    }
+
+    public function showEliminarUsuario() {
+      error_reporting(E_ALL & ~E_WARNING);
+
+      if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+      }
+
+      $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
+
+      try {
+        $id = @$_GET['usuario'];
+
+        if (!isset($id)) {
+          throw new Exception('ID del usuario no definido');
+        }
+
+        $usuario = UsuarioNotificacion::getUsuarioNotificacionById($id);
+
+        // Verificar si el usuario existe
+        if ($usuario === null) {
+          throw new Exception('Usuario no encontrado');
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+          $this->eliminarUsuario($id);
+
+          header("Location: ../UsuarioNotificacion/showAdminNewsletter");
+          exit();
+        } else {
+          echo $this->render("eliminarUsuarioNotificacion.php.twig", ["loggedin" => $loggedin, "usuario" => $usuario]);
+        }
+      } catch (Exception $e) {
+        header('Location: ../UsuarioNotificacion/showAdminNewsletter?error=1');
+        exit();
       }
     }
 }

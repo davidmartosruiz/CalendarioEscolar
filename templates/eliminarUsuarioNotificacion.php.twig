@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Eliminar usuario - Calendario escolar</title>
+    <title>Eliminar usuario newsletter - Calendario escolar</title>
     <link rel="icon" type="image/png" href="../public/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../public/dist/output.css" rel="stylesheet">
@@ -12,21 +12,21 @@
     <div class="text-center py-4 bg-gray-800 text-white">
         <h1 class="text-xl font-bold">Calendario escolar</h1>
         <div class="flex justify-center space-x-4 mt-2">
-          <a href="../Usuario/showAdmin" class="hover:text-gray-300">Volver atrás</a>
+          <a href="../UsuarioNotificacion/showAdminNewsletter" class="hover:text-gray-300">Volver atrás</a>
         </div>
     </div>
 {% if loggedin %}
   <div class="container mx-auto px-4 mt-6">
-    <h2 class="text-2xl font-bold mb-4">Eliminar usuario</h2>
+    <h2 class="text-2xl font-bold mb-4">Eliminar usuario de la newsletter</h2>
     <div class="bg-gray-200 p-4 rounded-md">
-      <p class="mb-2"><i class="fas fa-exclamation-circle text-red-500"></i> ¿Estás seguro que deseas eliminar el usuario?</p>
+      <p class="mb-2"><i class="fas fa-exclamation-circle text-red-500"></i> ¿Estás seguro que deseas eliminar el usuario del listado de notificaciones?</p>
       <div class="p-4 bg-gray-100 rounded-md">
-        <p><i class="fas fa-user"></i> Nombre: {{ usuario.nombre }}</p>
-        <p><i class="fas fa-envelope"></i> Correo electrónico: {{ usuario.email }}</p>
+        <p><i class="fas fa-user"></i> Nombre: {{ usuario.nombreUsuarioNotificaciones }}</p>
+        <p><i class="fas fa-envelope"></i> Correo electrónico: {{ usuario.correoUsuarioNotificaciones }}</p>
       </div>
     </div>
     <form action="" method="POST" class="mt-4">
-      <input type="hidden" name="id" value="{{ usuario.id }}">
+      <input type="hidden" name="id" value="{{ usuario.idUsuarioNotificaciones }}">
       <div class="flex items-center justify-between mt-4">
         <button class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700" type="submit">Eliminar usuario</button>
       </div>
@@ -35,7 +35,7 @@
 {% else %}
 <!-- Si no está logueado, se redigire al login -->
 <script>
-  window.location.href = "../Usuario/showLogin?error=2";
+  window.location.href = "../UsuarioNotificacion/showLoginNewsletter?error=2";
 </script>
 {% endif %}
 </body>

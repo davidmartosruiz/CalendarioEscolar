@@ -152,6 +152,10 @@ class UsuarioControlador extends Controlador {
     }
 
     public function modificarUsuario($id, $nombre, $email, $password) {
+        $usuario = Usuario::getUsuarioById($id);
+        if ($usuario === null) {
+            throw new Exception('Usuario no encontrado');
+        }
         return Usuario::actualizarUsuario($id, $nombre, $email, $password);
     }
 
@@ -162,13 +166,9 @@ class UsuarioControlador extends Controlador {
             session_start();
         }
 
-        // Verifica si el usuario ya ha iniciado sesión
         $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
-
-        // Usuario ID será el ID del usuario que ha iniciado sesión
         $usuario_id = $_SESSION['id'];
 
-        // Si el formulario se ha enviado, procesarlo
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             try {
                 $id = $_POST['id'];
@@ -180,40 +180,37 @@ class UsuarioControlador extends Controlador {
                     $this->modificarUsuario($id, $nombre, $email, $password);
                 } else {
                     $usuario = Usuario::getUsuarioById($id);
+                    if ($usuario === null) {
+                        throw new Exception('Usuario no encontrado');
+                    }
                     $this->modificarUsuario($id, $nombre, $email, $usuario->password);
                 }
 
-                // Redirige a la página de listar usuarios después de modificar el usuario
                 header('Location: ../Usuario/showAdmin');
                 exit();
             } catch (Exception $e) {
-                // Redirige a showModificarUsuario con un parámetro de error
                 header('Location: ../Usuario/showModificarUsuario?error=1');
                 exit();
             }
         } else {
             try {
-                // Intenta obtener el ID del usuario de la URL
                 $id = @$_GET['usuario'];
-
-                // Si el ID del usuario no está definido, lanza una excepción
                 if (!isset($id)) {
                     throw new Exception('ID del usuario no definido');
                 }
 
-                // Obtener el usuario de la base de datos
                 $usuario = Usuario::getUsuarioById($id);
+                if ($usuario === null) {
+                    throw new Exception('Usuario no encontrado');
+                }
 
-                // Mostrar la vista del formulario para modificar un usuario
                 echo $this->render("modificarUsuario.php.twig", ["loggedin" => $loggedin, "usuario" => $usuario]);
             } catch (Exception $e) {
-                // Redirige a showModificarUsuario con un parámetro de error
                 header('Location: ../Usuario/showAdmin?error=1');
                 exit();
             }
         }
     }
-
     public function eliminarUsuario($id) {
         return Usuario::eliminarUsuario($id);
     }

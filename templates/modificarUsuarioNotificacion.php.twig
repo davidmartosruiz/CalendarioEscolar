@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Modificar usuario de notificación - Calendario escolar</title>
+    <title>Modificar usuario newsletter - Calendario escolar</title>
     <link rel="icon" type="image/png" href="../public/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../public/dist/output.css" rel="stylesheet">
@@ -17,7 +17,7 @@
     </div>
 {% if loggedin %}
   <div class="container mx-auto px-4 mt-6">
-    <h2 class="text-2xl font-bold mb-4">Modificar usuario de notificación</h2>
+    <h2 class="text-2xl font-bold mb-4">Modificar usuario de la newsletter</h2>
     <form action="" method="POST">
       <input type="hidden" name="id" value="{{ usuario.idUsuarioNotificaciones }}">
       <div class="mb-4">
@@ -29,7 +29,7 @@
         <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email" name="email" value="{{ usuario.correoUsuarioNotificaciones }}" required>
       </div>
       <div class="flex items-center justify-between">
-        <button class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600" type="submit">Modificar usuario de notificación</button>
+        <button class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600" type="submit">Modificar usuario</button>
       </div>
     </form>
     {% if error == 1 %}

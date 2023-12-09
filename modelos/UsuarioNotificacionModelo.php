@@ -28,7 +28,13 @@ class UsuarioNotificacion {
                         ->prepare("SELECT * FROM usuariosNotificaciones WHERE idUsuarioNotificaciones = :id;");
         $stmt->execute(['id' => $id]);
         $stmt->setFetchMode(PDO::FETCH_CLASS, "UsuarioNotificacion");
-        return $stmt->fetch();
+        $usuario = $stmt->fetch();
+
+        if ($usuario === false) {
+            return null;
+        }
+
+        return $usuario;
     }
 
     /**
