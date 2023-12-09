@@ -94,6 +94,11 @@
         <button class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600" type="submit">Modificar evento</button>
       </div>
     </form>
+    {% if error == 1 %}
+      <div class="bg-red-500 text-white py-2 px-4 rounded">
+          Ha habido un error en las modificación del evento.
+      </div>
+    {% endif %}
   </div>
 {% else %}
 <!-- Si no está logueado, se redigire al login -->
@@ -101,8 +106,6 @@
   window.location.href = "../Usuario/showLogin?error=2";
 </script>
 {% endif %}
-
-
 
 <script>
 function toggleForm() {
@@ -113,9 +116,5 @@ function toggleForm() {
     form.style.display = "none";
   }
 }
-
-  document.addEventListener('DOMContentLoaded', (event) => {
-    document.getElementById('fecha').valueAsDate = new Date();
-  });
 </script>
 </body>

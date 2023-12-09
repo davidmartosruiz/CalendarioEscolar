@@ -50,8 +50,11 @@ class EventoControlador {
 
                 $this->agregarEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones);
 
-                // Redirige a la página de listar eventos después de agregar el evento
-                header('Location: ../Evento/listarEventos');
+                // Formatea la fecha a 'AAAA-MM'
+                $fechaFormateada = date('Y-m', strtotime($fecha));
+
+                // Redirige a la página de listar eventos después de agregar el evento con la fecha como parámetro
+                header('Location: ../Evento/listarEventos?fecha=' . $fechaFormateada);
                 exit();
             } catch (Exception $e) {
                 // Aquí puedes manejar la excepción como prefieras
@@ -97,28 +100,46 @@ class EventoControlador {
 
                 $this->modificarEvento($id, $nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones);
 
+                // Formatea la fecha a 'AAAA-MM'
+                $fechaFormateada = date('Y-m', strtotime($fecha));
+
                 // Redirige a la página de listar eventos después de modificar el evento
-                header('Location: ../Evento/listarEventos');
+                header('Location: ../Evento/listarEventos?fecha=' . $fechaFormateada);
                 exit();
             } catch (Exception $e) {
-                // Aquí puedes manejar la excepción como prefieras
-                echo "<div class=\"bg-red-500 text-white py-2 px-4\">Error: ",  $e->getMessage(), "\n</div>";
+                // Redirige a showModificarEvento con un parámetro de error
+                header('Location: ../Evento/showModificarEvento?error=1');
+                exit();
             }
         } else {
-            // Obtener el ID del evento de la URL
-            $id = $_GET['evento'];
+            try {
+                // Intenta obtener el ID del evento de la URL
+                $id = @$_GET['evento'];
 
-            // Obtener el evento de la base de datos
-            $evento = Evento::getEventoById($id);
+                // Si el ID del evento no está definido, lanza una excepción
+                if (!isset($id)) {
+                    throw new Exception('ID del evento no definido');
+                }
 
-            // Mostrar la vista del formulario para modificar un evento
-            $asignaturaModel = new Asignatura();
+                // Obtener el evento de la base de datos
+                $evento = Evento::getEventoById($id);
 
-            // Obtener todas las asignaturas
-            $asignaturas = $asignaturaModel->getAllAsignaturas();
+                // Mostrar la vista del formulario para modificar un evento
+                $asignaturaModel = new Asignatura();
 
-            // Pasar los datos del evento y las asignaturas a la vista
-            echo $this->twig->render("modificarEvento.php.twig", ["loggedin" => $loggedin, "evento" => $evento, "asignaturas" => $asignaturas]);
+                // Obtener todas las asignaturas
+                $asignaturas = $asignaturaModel->getAllAsignaturas();
+
+                // Recuperamos el error si lo hay
+                $error = isset($_GET["error"]) ? $_GET["error"] : null ;
+
+                // Pasar los datos del evento y las asignaturas a la vista
+                echo $this->twig->render("modificarEvento.php.twig", ["loggedin" => $loggedin, "evento" => $evento, "asignaturas" => $asignaturas, "error" => $error]);
+            } catch (Exception $e) {
+                // Redirige a showModificarEvento con un parámetro de error
+                header('Location: ../Evento/listarEventos?error=1');
+                exit();
+            }
         }
     }
 
@@ -136,15 +157,20 @@ class EventoControlador {
         // Verifica si el usuario ya ha iniciado sesión
         $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
 
-        // Obtener el ID del evento de la URL
-        $id = $_GET['evento'];
+        try {
+            // Intenta obtener el ID del evento de la URL
+            $id = @$_GET['evento'];
 
-        // Obtener el evento de la base de datos
-        $evento = Evento::getEventoById($id);
+            // Si el ID del evento no está definido, lanza una excepción
+            if (!isset($id)) {
+                throw new Exception('ID del evento no definido');
+            }
 
-        // Si el formulario se ha enviado, procesarlo
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            try {
+            // Obtener el evento de la base de datos
+            $evento = Evento::getEventoById($id);
+
+            // Si el formulario se ha enviado, procesarlo
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Obtener la fecha del evento
                 $fecha = substr($evento->fecha, 0, 7);
 
@@ -153,13 +179,14 @@ class EventoControlador {
                 // Redirige a la página de listar eventos después de eliminar el evento
                 header("Location: ../Evento/listarEventos?fecha=" . $fecha);
                 exit();
-            } catch (Exception $e) {
-                // Aquí puedes manejar la excepción como prefieras
-                echo "<div class=\"bg-red-500 text-white py-2 px-4\">Error: ",  $e->getMessage(), "\n</div>";
+            } else {
+                // Mostrar la vista de confirmación de eliminación
+                echo $this->twig->render("eliminarEvento.php.twig", ["loggedin" => $loggedin, "evento" => $evento]);
             }
-        } else {
-            // Mostrar la vista de confirmación de eliminación
-            echo $this->twig->render("eliminarEvento.php.twig", ["loggedin" => $loggedin, "evento" => $evento]);
+        } catch (Exception $e) {
+            // Redirige a showEliminarEvento con un parámetro de error
+            header('Location: ../Evento/listarEventos?error=1');
+            exit();
         }
     }
 
@@ -236,6 +263,9 @@ class EventoControlador {
         // Verifica si el usuario ya ha iniciado sesión
         $loggedin = isset($_SESSION['loggedin']) ? $_SESSION['loggedin'] : false;
 
+        // Recuperamos el error si lo hay
+        $error = isset($_GET["error"]) ? $_GET["error"] : null ;
+
         // Renderiza la plantilla con Twig
         echo $twig->render('listadoEventos.php.twig', [
             'eventosPorFecha' => $eventosPorFecha,
@@ -243,7 +273,8 @@ class EventoControlador {
             'calendar' => $fechaActual,
             'prevMonth' => $prevMonth,
             'nextMonth' => $nextMonth,
-            "loggedin" => $loggedin
+            "loggedin" => $loggedin,
+            "error" => $error
         ]);
     }
 }
