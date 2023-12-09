@@ -1,0 +1,69 @@
+{% if loggedin == null %}
+    <script type="text/javascript">
+        window.location.href = "../Usuario/showLogin?error=2";
+    </script>
+{% endif %}
+{% if error == 1 %}
+  <div class="bg-red-500 text-white py-2 px-4">
+      Ha habido un error en la ejecución. Por favor, inténtalo de nuevo.
+  </div>
+{% endif %}
+{% if error == 2 %}
+  <div class="bg-red-500 text-white py-2 px-4">
+      No se puede eliminar un usuario que tenga eventos creados, deberás eliminar primero los eventos.
+  </div>
+{% endif %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Newsletter - Calendario escolar</title>
+    <link rel="icon" type="image/png" href="../public/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../public/dist/output.css" rel="stylesheet">
+    <link href="../public/css/fontawesome-free-6.5.0-web/css/all.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="text-center py-4 bg-gray-800 text-white">
+        <h1 class="text-xl font-bold">Calendario escolar</h1>
+        <div class="flex justify-center space-x-4 mt-2">
+            <a href="../Evento/listarEventos" class="hover:text-gray-300">Volver atrás</a>
+        </div>
+    </div>
+<body class="bg-gray-100">
+  <div class="container mx-auto my-8">
+  <h2 class="text-2xl font-bold mb-4">Usuarios dados de alta en la newsletter</h2>
+    <div class="container mx-auto my-8">
+      <table class="w-full text-md bg-white shadow-md rounded mb-4">
+        <thead class="border-b">
+          <tr>
+            <th class="text-left p-3 px-5">Nombre</th>
+            <th class="text-left p-3 px-5">Correo electrónico</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for usuario in usuariosNotificaciones %}
+            <tr class="border-b hover:bg-gray-100">
+            <td class="p-3 px-5">{{ usuario.nombreUsuarioNotificaciones }}</td>
+            <td class="p-3 px-5">{{ usuario.correoUsuarioNotificaciones }}</td>
+            <td class="p-3 px-5">
+              <a href="../UsuarioNotificacion/showModificarUsuario?usuario={{ usuario.idUsuarioNotificaciones }}">
+                <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Modificar</button>
+              </a>
+            </td>
+            <td class="p-3 px-5">
+              <a href="../UsuarioNotificacion/showEliminarUsuario?usuario={{ usuario.idUsuarioNotificaciones }}">
+                <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Eliminar</button>
+              </a>
+            </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <a href="../UsuarioNotificacion/showAgregarUsuario">
+        <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-4">Añadir</button>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

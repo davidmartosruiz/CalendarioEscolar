@@ -20,11 +20,11 @@
             {% if loggedin %}
                 <a href="../Usuario/logout" class="hover:text-gray-300">Cerrar sesión</a>
                 <a href="../Usuario/showAdmin" class="hover:text-gray-300">Administrar usuarios</a>
-                <a href="../Usuario/showAdminNewsletter" class="hover:text-gray-300">Administrar notificaciones</a>
+                <a href="../UsuarioNotificacion/showAdminNewsletter" class="hover:text-gray-300">Administrar notificaciones</a>
                 <a href="../Asignatura/showAdminAsignaturas" class="hover:text-gray-300">Administrar asignaturas</a>
             {% else %}
                 <a href="../Usuario/showLogin" class="hover:text-gray-300">Acceso administrador</a>
-                <a href="../Usuario/showNewsletter" class="hover:text-gray-300">Registrarse en la newsletter</a>
+                <a href="../UsuarioNotificacion/showNewsletter" class="hover:text-gray-300">Registrarse en la newsletter</a>
             {% endif %}
             <a href="../Evento/exportarEventos" class="hover:text-gray-300">Exportar calendario</a>
         </div>

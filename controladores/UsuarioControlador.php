@@ -106,6 +106,12 @@ class UsuarioControlador extends Controlador {
             throw new Exception('Todos los campos son requeridos');
         }
 
+        // Verifica si el usuario ya existe
+        $usuarioExistente = Usuario::getUsuarioByEmail($email);
+        if($usuarioExistente) {
+            throw new Exception('El usuario ya existe');
+        }
+
         try {
             $usuario = Usuario::crearUsuario($nombre, $email, $password);
         } catch (Exception $e) {

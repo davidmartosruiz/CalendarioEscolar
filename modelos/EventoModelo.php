@@ -62,7 +62,5 @@ class Evento {
                         ->prepare("DELETE FROM eventos WHERE id = :id;");
         return $stmt->execute(['id' => $id]);
     }
-
-    
 }
 ?>
