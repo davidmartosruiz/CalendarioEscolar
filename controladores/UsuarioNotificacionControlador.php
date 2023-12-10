@@ -5,6 +5,39 @@ require_once "../modelos/TokenModelo.php" ;
 require_once "../vendor/autoload.php";
 
 class UsuarioNotificacionControlador extends Controlador {
+  public function showNewsletter() {
+      error_reporting(E_ALL & ~E_WARNING);
+
+      // Si el formulario se ha enviado, procesarlo
+      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        try {
+          // Verificar si los campos 'nombre' y 'email' están presentes
+          if (!isset($_POST['nombre']) || !isset($_POST['email'])) {
+            throw new Exception('Los campos nombre y email son requeridos');
+          }
+
+          $nombre = $_POST['nombre'];
+          $email = $_POST['email'];
+
+          $this->agregarUsuario($nombre, $email);
+
+          // Redirige a la página de agradecimiento después de agregar el usuario
+          header('Location: ../Evento/listarEventos?newsletter=1');
+          exit();
+        } catch (Exception $e) {
+          // Redirige a showNewsletter con un parámetro de error
+          header('Location: ../UsuarioNotificacion/showNewsletter?error=1');
+          exit();
+        }
+      } else {
+        // Recuperamos el error si lo hay
+        $error = isset($_GET["error"]) ? $_GET["error"] : null ;
+
+        // Mostrar la vista del formulario para agregar un usuario
+        echo $this->render("newsletter.php.twig", ["error" => $error]);
+      }
+  }
+
   public function showAdminNewsletter() {
     // Inicia la sesión si no ha sido iniciada
     if (session_status() == PHP_SESSION_NONE) {

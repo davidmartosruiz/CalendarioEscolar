@@ -243,6 +243,11 @@ class UsuarioControlador extends Controlador {
             // Obtener el usuario de la base de datos
             $usuario = Usuario::getUsuarioById($id);
 
+            // Verificar si el usuario existe
+            if ($usuario === null) {
+                throw new Exception('Usuario no encontrado');
+            }
+
             // Si el formulario se ha enviado, procesarlo
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $this->eliminarUsuario($id);

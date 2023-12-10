@@ -273,6 +273,9 @@ class EventoControlador {
         // Recuperamos el error si lo hay
         $error = isset($_GET["error"]) ? $_GET["error"] : null ;
 
+        // Recuperamos mensaje de newsletter si lo hay
+        $newsletter = isset($_GET["newsletter"]) ? $_GET["newsletter"] : null ;
+
         // Renderiza la plantilla con Twig
         echo $twig->render('listadoEventos.php.twig', [
             'eventosPorFecha' => $eventosPorFecha,
@@ -281,7 +284,8 @@ class EventoControlador {
             'prevMonth' => $prevMonth,
             'nextMonth' => $nextMonth,
             "loggedin" => $loggedin,
-            "error" => $error
+            "error" => $error,
+            "newsletter" => $newsletter
         ]);
     }
 }
