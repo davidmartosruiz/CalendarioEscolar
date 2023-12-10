@@ -1,44 +1,45 @@
 <?php
-require_once "../database/Conexion.php";
-require_once "../vendor/autoload.php";
 
+// Importar PHPMailer classes al "namespace global"
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-use Dotenv\Dotenv;
 
-class EmailModelo {
+require '../vendor/autoload.php';
 
-  public static function enviarEmail($destinatario, $asunto, $cuerpo): bool {
-    $dotenv = Dotenv::createImmutable(__DIR__);
-    $dotenv->load();
-
+class Email {
+  public static function enviarCorreo($correoUsuarioNotificaciones, $asunto, $cuerpo) {
     $mail = new PHPMailer(true);
 
     try {
-      // Configuración del servidor
-      $mail->SMTPDebug = 2;                                 
-      $mail->isSMTP();                                      
-      $mail->Host       = $_ENV['SMTP_HOST'];  
-      $mail->SMTPAuth   = true;                             
-      $mail->Username   = $_ENV['SMTP_USER'];  
-      $mail->Password   = $_ENV['SMTP_PASS'];            
-      $mail->SMTPSecure = 'tls';               
-      $mail->Port       = $_ENV['SMTP_PORT'];                 
+      // Leer la configuración del servidor de correo del archivo .env
+      $env = parse_ini_file('../.env');
 
-      // Destinatarios
-      $mail->setFrom($_ENV['SMTP_USER'], 'Mailer');
-      $mail->addAddress($destinatario);     
+      // Configuración del servidor de correo
+      $mail->SMTPDebug = 0;                                 
+      $mail->isSMTP();                                      
+      $mail->Host = $env['SMTP_HOST'];  
+      $mail->SMTPAuth = true;                               
+      $mail->Username = $env['SMTP_USERNAME'];                 
+      $mail->Password = $env['SMTP_PASSWORD'];                           
+      $mail->SMTPSecure = $env['SMTP_SECURE'];                            
+      $mail->Port = $env['SMTP_PORT']; 
+
+      // Permitir caracteres UTF-8
+      $mail->CharSet = 'UTF-8';
+
+      // Recipientes
+      $mail->setFrom($env['SMTP_USERNAME'], 'Calendario escolar');
+      $mail->addAddress($correoUsuarioNotificaciones);     
 
       // Contenido
       $mail->isHTML(true);                                  
       $mail->Subject = $asunto;
       $mail->Body    = $cuerpo;
+      $mail->AltBody = strip_tags($cuerpo);
 
       $mail->send();
-      return true;
     } catch (Exception $e) {
-      error_log("No se pudo enviar el correo. Error: {$mail->ErrorInfo}");
-      return false;
+      echo "Hubo un problema en el envío del correo electrónico, pídele al administrador que revise la configuración del servidor de correo.";
     }
   }
 }

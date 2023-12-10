@@ -45,12 +45,15 @@ class Evento {
         return $stmt->fetch();
     }
 
-    public static function crearEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones): bool {
+    public static function crearEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones) {
         $stmt = Conexion::getConnection()
-                        ->prepare("INSERT INTO eventos (nombre, fecha, asignatura_id, usuario_id, anotaciones) VALUES (:nombre, :fecha, :asignatura_id, :usuario_id, :anotaciones);");
-        return $stmt->execute(['nombre' => $nombre, 'fecha' => $fecha, 'asignatura_id' => $asignatura_id, 'usuario_id' => $usuario_id, 'anotaciones' => $anotaciones]);
-    }
+                        ->prepare("INSERT INTO eventos (nombre, fecha, asignatura_id, usuario_id, anotaciones) VALUES (:nombre, :fecha, :asignatura_id, :usuario_id, :anotaciones)");
+        $stmt->execute(['nombre' => $nombre, 'fecha' => $fecha, 'asignatura_id' => $asignatura_id, 'usuario_id' => $usuario_id, 'anotaciones' => $anotaciones]);
 
+        // Devolver el ID del evento recién insertado
+        return Conexion::getConnection()->lastInsertId();
+    }
+    
     public static function actualizarEvento($id, $nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones): bool {
         $stmt = Conexion::getConnection()
                         ->prepare("UPDATE eventos SET nombre = :nombre, fecha = :fecha, asignatura_id = :asignatura_id, usuario_id = :usuario_id, anotaciones = :anotaciones WHERE id = :id;");

@@ -1,6 +1,8 @@
 <?php
 require_once "../modelos/EventoModelo.php";
 require_once "../modelos/AsignaturaModelo.php";
+require_once "../modelos/UsuarioNotificacionModelo.php";
+require_once "../modelos/EmailModelo.php";
 require_once "../vendor/autoload.php";
 
 class EventoControlador {
@@ -15,18 +17,43 @@ class EventoControlador {
 
 
 
-    public function agregarEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones) {
-        if(empty($nombre) || empty($fecha) || empty($asignatura_id) || empty($usuario_id)) {
-            throw new Exception('Todos los campos son requeridos');
-        }
+        public function agregarEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones) {
+            if(empty($nombre) || empty($fecha) || empty($asignatura_id) || empty($usuario_id)) {
+                throw new Exception('Todos los campos son requeridos');
+            }
+        
+            try {
+                $idEvento = Evento::crearEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones);
+                        
+                // Obtener todos los usuarios de la newsletter
+                $usuariosNewsletter = UsuarioNotificacion::getAllUsuariosNotificaciones();
 
-        try {
-            $evento = Evento::crearEvento($nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones);
-        } catch (Exception $e) {
-            // Manejar la excepción
-            echo 'Error: ',  $e->getMessage(), "\n";
+                setlocale(LC_TIME, 'es_ES.UTF-8');
+
+                // Verificar que $usuariosNewsletter es un array antes de iterar
+                if (is_array($usuariosNewsletter)) {
+                    // Para cada usuario, enviar un correo electrónico
+                    foreach ($usuariosNewsletter as $usuario) {
+                        if ($usuario !== null && property_exists($usuario, 'correoUsuarioNotificaciones')) {
+                            $evento = Evento::getEventoById($idEvento);
+                            if ($evento !== null) {
+                                $fecha = new DateTime($evento->fecha);
+                                $formatter = new IntlDateFormatter('es_ES', IntlDateFormatter::FULL, IntlDateFormatter::NONE);
+                                $fecha_formateada = $formatter->format($fecha);
+                                $asunto = "$evento->nombre el día $fecha_formateada";
+                                $cuerpo = "Se ha agregado un nuevo evento al calendario escolar: <br>$evento->nombre - $evento->nombre_asignatura <br>$evento->anotaciones";
+                        
+                                // Verificar si el correo se envió correctamente
+                                Email::enviarCorreo($usuario->correoUsuarioNotificaciones, $asunto, $cuerpo);
+                            }
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                // Manejar la excepción
+                echo 'Error: ',  $e->getMessage(), "\n";
+            }
         }
-    }
 
     public function showAgregarEvento() {
         error_reporting(E_ALL & ~E_WARNING);
