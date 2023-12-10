@@ -15,7 +15,7 @@ El único fichero que hay que modificar es .env, donde se encuentran las variabl
 Es necesario contar con una BBDD MySQL/MariaBD, así como una conexión a un servidor SMTP para el envío de correos electrónicos.
 
 ## Uso
-La aplicación está pensada para ser utilizada por los alumnos de un centro educativo, para que puedan consultar las fechas de exámenes, entregas de trabajos, etc.ç
+La aplicación está pensada para ser utilizada por los alumnos de un centro educativo, para que puedan consultar las fechas de exámenes, entregas de trabajos, etc.
 
 Para acceder a la aplicación, no es necesario registrarse con un correo electrónico y una contraseña. Simplemente, cualquier alumno puede acceder a la aplicación y consultar las fechas de los exámenes.
 
