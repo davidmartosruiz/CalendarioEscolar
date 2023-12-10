@@ -100,7 +100,37 @@ class EventoControlador {
     }
 
     public function modificarEvento($id, $nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones) {
-        return Evento::actualizarEvento($id, $nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones);
+        $resultado = Evento::actualizarEvento($id, $nombre, $fecha, $asignatura_id, $usuario_id, $anotaciones);
+
+        // Si el evento se actualizó correctamente, enviar un correo electrónico
+        if ($resultado) {
+            // Obtener todos los usuarios de la newsletter
+            $usuariosNewsletter = UsuarioNotificacion::getAllUsuariosNotificaciones();
+
+            setlocale(LC_TIME, 'es_ES.UTF-8');
+
+            // Verificar que $usuariosNewsletter es un array antes de iterar
+            if (is_array($usuariosNewsletter)) {
+                // Para cada usuario, enviar un correo electrónico
+                foreach ($usuariosNewsletter as $usuario) {
+                    if ($usuario !== null && property_exists($usuario, 'correoUsuarioNotificaciones')) {
+                        $evento = Evento::getEventoById($id);
+                        if ($evento !== null) {
+                            $fecha = new DateTime($evento->fecha);
+                            $formatter = new IntlDateFormatter('es_ES', IntlDateFormatter::FULL, IntlDateFormatter::NONE);
+                            $fecha_formateada = $formatter->format($fecha);
+                            $asunto = "Modificado $evento->nombre para el día $fecha_formateada";
+                            $cuerpo = "Se ha modificado un evento en el calendario escolar: <br>$evento->nombre - $evento->nombre_asignatura <br>$evento->anotaciones";
+                    
+                            // Verificar si el correo se envió correctamente
+                            Email::enviarCorreo($usuario->correoUsuarioNotificaciones, $asunto, $cuerpo);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $resultado;
     }
 
     public function showModificarEvento() {
@@ -171,7 +201,38 @@ class EventoControlador {
     }
 
     public function eliminarEvento($id) {
-        return Evento::eliminarEvento($id);
+        // Obtener los detalles del evento antes de eliminarlo
+        $evento = Evento::getEventoById($id);
+
+        // Eliminar el evento
+        $resultado = Evento::eliminarEvento($id);
+
+        // Si el evento se eliminó correctamente, enviar un correo electrónico
+        if ($resultado && $evento !== null) {
+            // Obtener todos los usuarios de la newsletter
+            $usuariosNewsletter = UsuarioNotificacion::getAllUsuariosNotificaciones();
+
+            setlocale(LC_TIME, 'es_ES.UTF-8');
+
+            // Verificar que $usuariosNewsletter es un array antes de iterar
+            if (is_array($usuariosNewsletter)) {
+                // Para cada usuario, enviar un correo electrónico
+                foreach ($usuariosNewsletter as $usuario) {
+                    if ($usuario !== null && property_exists($usuario, 'correoUsuarioNotificaciones')) {
+                        $fecha = new DateTime($evento->fecha);
+                        $formatter = new IntlDateFormatter('es_ES', IntlDateFormatter::FULL, IntlDateFormatter::NONE);
+                        $fecha_formateada = $formatter->format($fecha);
+                        $asunto = "Cancelado $evento->nombre del día $fecha_formateada";
+                        $cuerpo = "Se ha eliminado un evento del calendario escolar: <br>$evento->nombre - $evento->nombre_asignatura <br>$evento->anotaciones";
+                
+                        // Verificar si el correo se envió correctamente
+                        Email::enviarCorreo($usuario->correoUsuarioNotificaciones, $asunto, $cuerpo);
+                    }
+                }
+            }
+        }
+
+        return $resultado;
     }
 
     public function showEliminarEvento() {
