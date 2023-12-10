@@ -14,10 +14,20 @@ class Usuario {
      * devuelve en formato array.
      * @return array
      */
-    public static function getAllUsuarios(): array {
+    public static function getAllUsuarios($limit, $offset): array {
         $pdo = Conexion::getConnection();
-        $stmt = $pdo->query("SELECT * FROM usuarios");
+        $stmt = $pdo->prepare("SELECT * FROM usuarios LIMIT :limit OFFSET :offset");
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS, "Usuario");
+    }
+
+    public static function getTotalUsuarios(): int {
+        $pdo = Conexion::getConnection();
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM usuarios");
+        $stmt->execute();
+        return $stmt->fetchColumn();
     }
 
     public static function getUsuarioById(int $id): ?Usuario {
@@ -36,6 +46,16 @@ class Usuario {
         $stmt->execute(['email' => $email]);
         $stmt->setFetchMode(PDO::FETCH_CLASS, "Usuario");
     
+        $result = $stmt->fetch();
+        return $result !== false ? $result : null;
+    }
+
+    public static function getUsuarioByNombre(string $nombre): ?Usuario {
+        $pdo = Conexion::getConnection();
+        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE nombre = :nombre");
+        $stmt->execute(['nombre' => $nombre]);
+        $stmt->setFetchMode(PDO::FETCH_CLASS, "Usuario");
+
         $result = $stmt->fetch();
         return $result !== false ? $result : null;
     }

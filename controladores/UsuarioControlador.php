@@ -90,14 +90,32 @@ class UsuarioControlador extends Controlador {
         // Recuperamos el error si lo hay
         $error = isset($_GET["error"]) ? $_GET["error"] : null ;
 
-        // Obtenemos todos los usuarios
-        $usuarios = Usuario::getAllUsuarios();
+        // Obtenemos la página actual
+        $page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+        // Definimos el número de usuarios por página
+        $limit = 10;
+
+        // Calculamos el offset
+        $offset = ($page - 1) * $limit;
+
+        // Obtenemos todos los usuarios con paginación
+        $usuarios = Usuario::getAllUsuarios($limit, $offset);
+
+        // Obtenemos el número total de usuarios
+        $totalUsuarios = Usuario::getTotalUsuarios();
+
+        // Calculamos el número total de páginas
+        $totalPaginas = ceil($totalUsuarios / $limit);
 
         // Obtenemos el ID del usuario logueado
         $loggedin_user_id = isset($_SESSION['id']) ? $_SESSION['id'] : null;
 
+        // Obtenemos todos los parámetros de consulta actuales
+        $query_params = $_GET;
+
         // Cargamos la vista de admin y le pasamos los usuarios y los parámetros
-        echo $this->render("admin.php.twig", ["loggedin" => $loggedin, "usuarios" => $usuarios, "error" => $error, "loggedin_user_id" => $loggedin_user_id]) ;
+        echo $this->render("admin.php.twig", ["loggedin" => $loggedin, "usuarios" => $usuarios, "error" => $error, "loggedin_user_id" => $loggedin_user_id, "totalPaginas" => $totalPaginas, "paginaActual" => $page, "query_params" => $query_params]) ;
     }
 
     
@@ -106,10 +124,16 @@ class UsuarioControlador extends Controlador {
             throw new Exception('Todos los campos son requeridos');
         }
 
-        // Verifica si el usuario ya existe
-        $usuarioExistente = Usuario::getUsuarioByEmail($email);
-        if($usuarioExistente) {
-            throw new Exception('El usuario ya existe');
+        // Verifica si el usuario ya existe por email
+        $usuarioExistentePorEmail = Usuario::getUsuarioByEmail($email);
+        if($usuarioExistentePorEmail) {
+            throw new Exception('Ya existe un usuario con este correo electrónico');
+        }
+
+        // Verifica si el usuario ya existe por nombre
+        $usuarioExistentePorNombre = Usuario::getUsuarioByNombre($nombre);
+        if($usuarioExistentePorNombre) {
+            throw new Exception('Ya existe un usuario con este nombre');
         }
 
         try {

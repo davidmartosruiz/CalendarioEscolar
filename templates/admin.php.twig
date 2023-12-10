@@ -71,6 +71,15 @@
         <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-4">Añadir</button>
       </a>
     </div>
+    <div class="mt-4 flex justify-center">
+      {% for i in 1..totalPaginas %}
+        {% if i == paginaActual %}
+          <span class="mx-1 py-2 px-4 bg-gray-800 text-white rounded">{{ i }}</span> {# La página actual no es un enlace #}
+        {% else %}
+          <a class="mx-1 py-2 px-4 bg-gray-500 text-gray-200 hover:bg-gray-600 hover:text-white rounded" href="?{{ query_params|merge({'page': i})|url_encode }}">{{ i }}</a> {# Las otras páginas son enlaces #}
+        {% endif %}
+      {% endfor %}
+    </div>
   </div>
 </body>
 </html>
