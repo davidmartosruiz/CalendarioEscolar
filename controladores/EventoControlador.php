@@ -41,7 +41,7 @@ class EventoControlador {
                                 $formatter = new IntlDateFormatter('es_ES', IntlDateFormatter::FULL, IntlDateFormatter::NONE);
                                 $fecha_formateada = $formatter->format($fecha);
                                 $asunto = "$evento->nombre el día $fecha_formateada";
-                                $cuerpo = "Se ha agregado un nuevo evento al calendario escolar: <br>$evento->nombre - $evento->nombre_asignatura <br>$evento->anotaciones";
+                                $cuerpo = "Se ha agregado un nuevo evento al calendario escolar: <br>$evento->nombre - $evento->nombre_asignatura <br>$evento->anotaciones<br><hr>Evento creado por $evento->nombre_usuario";
                         
                                 // Verificar si el correo se envió correctamente
                                 Email::enviarCorreo($usuario->correoUsuarioNotificaciones, $asunto, $cuerpo);
@@ -120,7 +120,7 @@ class EventoControlador {
                             $formatter = new IntlDateFormatter('es_ES', IntlDateFormatter::FULL, IntlDateFormatter::NONE);
                             $fecha_formateada = $formatter->format($fecha);
                             $asunto = "Modificado $evento->nombre para el día $fecha_formateada";
-                            $cuerpo = "Se ha modificado un evento en el calendario escolar: <br>$evento->nombre - $evento->nombre_asignatura <br>$evento->anotaciones";
+                            $cuerpo = "Se ha modificado un evento en el calendario escolar: <br>$evento->nombre - $evento->nombre_asignatura <br>$evento->anotaciones<br><hr>Evento modificado por $evento->nombre_usuario";
                     
                             // Verificar si el correo se envió correctamente
                             Email::enviarCorreo($usuario->correoUsuarioNotificaciones, $asunto, $cuerpo);
@@ -223,7 +223,7 @@ class EventoControlador {
                         $formatter = new IntlDateFormatter('es_ES', IntlDateFormatter::FULL, IntlDateFormatter::NONE);
                         $fecha_formateada = $formatter->format($fecha);
                         $asunto = "Cancelado $evento->nombre del día $fecha_formateada";
-                        $cuerpo = "Se ha eliminado un evento del calendario escolar: <br>$evento->nombre - $evento->nombre_asignatura <br>$evento->anotaciones";
+                        $cuerpo = "Se ha eliminado un evento del calendario escolar: <br>$evento->nombre - $evento->nombre_asignatura <br>$evento->anotaciones<br><hr>Evento eliminado por $evento->nombre_usuario";
                 
                         // Verificar si el correo se envió correctamente
                         Email::enviarCorreo($usuario->correoUsuarioNotificaciones, $asunto, $cuerpo);

@@ -56,8 +56,20 @@ class UsuarioNotificacionControlador extends Controlador {
     // Obtenemos el ID del usuario logueado
     $loggedin_user_id = isset($_SESSION['id']) ? $_SESSION['id'] : null;
 
+    // Obtenemos el número de página actual
+    $page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+    // Obtenemos todos los usuarios subscritos a notificaciones
+    $usuariosNotificaciones = UsuarioNotificacion::getAllUsuariosNotificaciones($page);
+
+    // Obtenemos el número total de páginas
+    $totalPaginas = UsuarioNotificacion::getTotalPaginas();
+
+    // Obtenemos todos los parámetros de consulta actuales
+    $query_params = $_GET;
+
     // Cargamos la vista y le pasamos los usuarios y los parámetros
-    echo $this->render("adminNewsletter.php.twig", ["loggedin" => $loggedin, "usuariosNotificaciones" => $usuariosNotificaciones, "error" => $error, "loggedin_user_id" => $loggedin_user_id]) ;
+    echo $this->render("adminNewsletter.php.twig", ["loggedin" => $loggedin, "usuariosNotificaciones" => $usuariosNotificaciones, "error" => $error, "loggedin_user_id" => $loggedin_user_id, "totalPaginas" => $totalPaginas, "paginaActual" => $page, "query_params" => $query_params]) ;
   }
 
   /**

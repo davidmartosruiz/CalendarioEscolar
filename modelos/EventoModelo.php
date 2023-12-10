@@ -37,8 +37,10 @@ class Evento {
      */
     public static function getEventoById(int $id): ?Evento {
         $stmt = Conexion::getConnection()
-                        ->prepare("SELECT eventos.*, asignaturas.nombre AS nombre_asignatura FROM eventos 
+                        ->prepare("SELECT eventos.*, asignaturas.nombre AS nombre_asignatura, usuarios.nombre AS nombre_usuario 
+                                   FROM eventos 
                                    INNER JOIN asignaturas ON eventos.asignatura_id = asignaturas.id 
+                                   LEFT JOIN usuarios ON eventos.usuario_id = usuarios.id 
                                    WHERE eventos.id = :id;");
         $stmt->execute(['id' => $id]);
         $stmt->setFetchMode(PDO::FETCH_CLASS, "Evento");

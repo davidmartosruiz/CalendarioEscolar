@@ -37,6 +37,15 @@ class UsuarioNotificacion {
         return $usuario;
     }
 
+    public static function getTotalPaginas(int $usuariosPorPagina = 10): int {
+        $pdo = Conexion::getConnection();
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM usuariosNotificaciones");
+        $stmt->execute();
+        $totalUsuarios = $stmt->fetchColumn();
+
+        return ceil($totalUsuarios / $usuariosPorPagina);
+    }
+
     /**
      * Recupera una notificación de usuario específica por su correo electrónico.
      * @param string $correo
