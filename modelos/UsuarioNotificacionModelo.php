@@ -12,10 +12,14 @@ class UsuarioNotificacion {
      * devuelve en formato array.
      * @return array
      */
-    public static function getAllUsuariosNotificaciones(): array {
-        return Conexion::getConnection()
-                        ->query("SELECT * FROM usuariosNotificaciones;")
-                        ->fetchAll(PDO::FETCH_CLASS, "UsuarioNotificacion");
+    public static function getAllUsuariosNotificaciones(int $pagina = 1, int $usuariosPorPagina = 10): array {
+        $pdo = Conexion::getConnection();
+        $offset = ($pagina - 1) * $usuariosPorPagina;
+        $stmt = $pdo->prepare("SELECT * FROM usuariosNotificaciones LIMIT :limit OFFSET :offset");
+        $stmt->bindParam(':limit', $usuariosPorPagina, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_CLASS, "UsuarioNotificacion");
     }
 
     /**

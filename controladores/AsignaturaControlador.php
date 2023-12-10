@@ -14,7 +14,20 @@ class AsignaturaControlador extends Controlador {
     $asignaturas = Asignatura::getAllAsignaturas();
     $loggedin_user_id = isset($_SESSION['id']) ? $_SESSION['id'] : null;
 
-    echo $this->render("adminAsignaturas.php.twig", ["loggedin" => $loggedin, "asignaturas" => $asignaturas, "error" => $error, "loggedin_user_id" => $loggedin_user_id]) ;
+    // Obtenemos el número de página actual
+    $page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+    // Obtenemos todas las asignaturas
+    $asignaturas = Asignatura::getAllAsignaturas($page);
+
+    // Obtenemos el número total de páginas
+    $totalPaginas = Asignatura::getTotalPaginas();
+
+    // Obtenemos todos los parámetros de consulta actuales
+    $query_params = $_GET;
+
+    // Cargamos la vista y le pasamos las asignaturas y los parámetros
+    echo $this->render("adminAsignaturas.php.twig", ["loggedin" => $loggedin, "asignaturas" => $asignaturas, "error" => $error, "loggedin_user_id" => $loggedin_user_id, "totalPaginas" => $totalPaginas, "paginaActual" => $page, "query_params" => $query_params]) ;
   }
 
   public function agregarAsignatura($nombre, $abreviatura) {

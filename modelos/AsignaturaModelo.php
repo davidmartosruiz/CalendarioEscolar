@@ -7,9 +7,13 @@ class Asignatura {
     public string $nombre;
     public string $abreviatura;
 
-    public static function getAllAsignaturas(): array {
+    public static function getAllAsignaturas(int $pagina = 1, int $asignaturasPorPagina = 10): array {
         $pdo = Conexion::getConnection();
-        $stmt = $pdo->query("SELECT * FROM asignaturas");
+        $offset = ($pagina - 1) * $asignaturasPorPagina;
+        $stmt = $pdo->prepare("SELECT * FROM asignaturas LIMIT :limit OFFSET :offset");
+        $stmt->bindParam(':limit', $asignaturasPorPagina, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS, "Asignatura");
     }
 
@@ -21,6 +25,15 @@ class Asignatura {
 
         $result = $stmt->fetch();
         return $result !== false ? $result : null;
+    }
+
+    public static function getTotalPaginas(int $asignaturasPorPagina = 10): int {
+        $pdo = Conexion::getConnection();
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM asignaturas");
+        $stmt->execute();
+        $totalAsignaturas = $stmt->fetchColumn();
+
+        return ceil($totalAsignaturas / $asignaturasPorPagina);
     }
 
     public static function crearAsignatura(string $nombre, string $abreviatura): bool {
