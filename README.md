@@ -37,7 +37,7 @@ Para desplegar la aplicación, es necesario copiar todos los ficheros en la carp
 
 Será necesario que el servidor web PHP tenga instalado Composer, junto con las dependencias de la aplicación: PHPMailer, Dotenv, Twig y Symfony.
 
-Actualmente, la aplicación está desplegada en un servidor de AWS, y se puede acceder a ella a través de la siguiente URL: https://calendarioescolar.duckdns.org
+Actualmente, la aplicación está desplegada en un servidor de AWS, y se puede acceder a ella a través de la siguiente URL: https://cal.davidmartos.dev
 
 ## Excepción de responsabilidad
 La aplicación ha sido desarrollada para un proyecto de clase, y no está pensada necesariamente para ser utilizada en un entorno de producción. Por tanto, no me hago responsable de cualquier daño que pueda causar la aplicación, ni de la pérdida de datos que pueda ocasionar.
